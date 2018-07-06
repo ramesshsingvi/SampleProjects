@@ -1,0 +1,138 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model Carer
+
+@{
+    ViewBag.Title = "Carer " + Model.FormattedName;
+    List<TimesheetWeek> timesheets = ViewBag.Timesheets;
+    List<Booking> bookings = ViewBag.Bookings;
+    List<SmsMessage> messages = ViewBag.SmsMessages;
+    var headerInfo = ViewBag.HeaderInfo;
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+<div class="dropdown">
+    <button text="Action" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+        Action <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        @if (!String.IsNullOrWhiteSpace(Model.ProfileLink))
+        {
+            <li>
+                <a href="@Model.ProfileLink" target="_blank">View Profile</a>
+            </li>
+        }
+        <li>
+            <a href="@Url.Action("Impersonate", "Carer", new { id = Model.ID})" target="_blank">Impersonate</a>
+        </li>
+        <li>
+            <a href="@Url.Action("PaymentHistory", "CarerPayment", new { id = Model.ID})">View Payment History</a>
+        </li>
+        <li>
+            <a href="@Url.Action("Index", "CarerStatement", new { id = Model.ID})">View Statements</a>
+        </li>
+        <li>
+            <a href="@Url.Action("Availability", "Carer", new { id = Model.ID})">Availability</a>
+        </li>
+    </ul>
+</div>
+
+@Html.Partial("_Feedback")
+
+@Html.DisplayFor(x => headerInfo, "HeaderInfo")
+
+
+<ul class="nav nav-tabs tab-primary" role="tablist">
+    <li role="presentation" class="active">
+        <a href="#timesheets" aria-controls="timesheets" role="tab" data-toggle="tab">Timesheets</a>
+    </li>
+    <li role="presentation">
+        <a href="#bookings" aria-controls="bookings" role="tab" data-toggle="tab">Bookings</a>
+    </li>
+    <li role="presentation">
+        <a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a>
+    </li>
+</ul>
+<div class="tab-content text-left">
+    <div role="tabpanel" class="tab-pane shadow active" id="timesheets">
+
+        @Html.Grid(timesheets).Columns(columns =>
+{
+    columns.Add(x => x.Reference).Titled("Timesheet Ref").Sortable(true).Filterable(true);
+    columns.Add(x => x.Agreement.CareRecipientOrCustomer).Titled("Care Recipient/Customer").Sortable(true).Filterable(true);
+    columns.Add(x => x.WeekEnding).RenderValueAs(x => x.WeekEnding.ToShortDateString()).Titled("Week Ending").Sortable(true).Filterable(true);
+    columns.Add(x => x.HoursWorked).RenderValueAs(x => (x.HoursWorked * 60).ConvertMinutesToHHMMString()).Titled("Hours Worked").Sortable(true).Filterable(true);
+    columns.Add(x => x.Expenses, "Expenses").RenderValueAs(x => x.Expenses.Where(y => y.Type == ExpenseType.Other).Sum(y => y.AmountClaimed).ToMoney()).Titled("Other Expenses").Sortable(false).Filterable(false);
+    columns.Add(x => x.Expenses, "Mileage").RenderValueAs(x => x.Expenses.Where(y => y.Type == ExpenseType.Mileage).Sum(y => Convert.ToDecimal(y.ExtraInfo)).ToString()).Titled("Mileage").Sortable(false).Filterable(false);
+    columns.Add(x => x.Status).RenderValueAs(x => "<div class=\"badge\">" + x.Status.GetDescription() + "</div>").Encoded(false).Sanitized(false).Titled("Status").Sortable(true).Filterable(true);
+    columns.Add(x => x.HoldFromCustomerInvoice).RenderValueAs(x => x.HoldFromCustomerInvoice ? ("<i title='Held From Customer Invoice' style='color:red' class='fa fa-exclamation-triangle'></i>") : "").Encoded(false).Sanitized(false).Titled("").Sortable(true);
+    columns.Add(x => x.ID, "Action Column").RenderValueAs(x => CustomMenuColumn(x)).Encoded(false).Sanitized(false).Titled("Action");
+}).WithPaging(20).WithMultipleFilters()
+    </div>
+    <div role="tabpanel" class="tab-pane shadow" id="bookings">
+        @Html.Grid(bookings).Columns(columns =>
+   {
+       columns.Add(x => x.ID).Titled("Booking Ref").RenderValueAs(x => BookingReferenceColumn(x)).Encoded(false).Sanitized(false).Sortable(true).Filterable(true);
+       columns.Add(x => x.CareRecipientOrCustomerName).Titled("Care Recipient/Customer").Sortable(true).Filterable(true);
+       columns.Add(x => x.MaxWeeklyHours).Titled("Max. Hours").Sortable(true).Filterable(true);
+       columns.Add(x => x.BookingStatus).RenderValueAs(x => "<div class=\"badge\">" + x.BookingStatus + "</div>").Encoded(false).Sanitized(false).Titled("Status").Sortable(true).Filterable(true);
+       columns.Add(x => x.CareType).RenderValueAs(x => (x.CareType.Equals(CareType.LiveIn) ? ("&nbsp;<i title='Live-in' class='fa fa-home'></i>") : "")).Encoded(false).Sanitized(false).Titled("").Sortable(false);
+       columns.Add(x => x.CreatedDate).RenderValueAs(x => x.CreatedDate.ToShortDateString()).Titled("Booking Date").Sortable(true).Filterable(true);
+   }).WithPaging(20)
+    </div>
+    <div role="tabpanel" class="tab-pane shadow" id="messages">
+        @Html.Grid(messages).Columns(columns =>
+   {
+       columns.Add(x => x.SenderDisplayName).Titled("Sender").Sortable(true).Filterable(true);
+       columns.Add(x => x.SentDate).RenderValueAs(x => x.SentDate.ToString("dd/MM/yyyy hh:mm:ss")).Titled("Date Sent").Sortable(true).Filterable(true);
+       columns.Add(x => x.FromNumber).Titled("From Number").Sortable(true).Filterable(true);
+       columns.Add(x => x.ToNumber).Titled("To Number").Sortable(true).Filterable(true);
+       columns.Add(x => x.Message).Titled("Message").Sortable(true).Filterable(true);
+       columns.Add(x => x.ReplyDate).RenderValueAs(x => x.ReplyDate.HasValue ? ((DateTime)x.ReplyDate).ToString("dd/MM/yyyy hh:mm:ss") : "").Titled("Date Replied").Sortable(true).Filterable(true);
+       columns.Add(x => x.ReplyMessage).RenderValueAs(x => (x.ReplyReceived ? x.ReplyMessage.Replace("\n", "<br>") : "")).Encoded(false).Sanitized(false).Titled("Reply Received").Sortable(true).Filterable(true);
+   }).WithPaging(20)
+    </div>
+</div>
+
+@helper ReferenceColumn(TimesheetWeek timesheet)
+{
+    @*@Html.ActionLink(timesheet.Reference, "View", "Timesheet", routeValues: new { Id = timesheet.ID }, htmlAttributes: null)*@
+    @timesheet.Reference
+}
+
+
+
+@helper BookingReferenceColumn(Booking booking)
+{
+    @Html.ActionLink(booking.Reference, "Edit", "Booking", routeValues: new { Id = booking.ID, Mode="Compact" }, htmlAttributes: null)
+}
+
+@helper CustomMenuColumn(TimesheetWeek timesheetWeek)
+{
+    <text>
+        <div class="dropdown">
+            <button text="Action" class="btn btn-info dropdown-toggle btn-xs" data-toggle="dropdown">
+                Action <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li>
+                    @if (timesheetWeek.Status == TimesheetStatus.Created || timesheetWeek.Status == TimesheetStatus.Rejected)
+                    {
+                        <a href="@Url.Action("Edit", "Timesheet", new { id = timesheetWeek.ID })"><i class="fa fa-binoculars fa-xs"></i> View/Edit</a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("View", "Timesheet", new { id = timesheetWeek.ID })"><i class="fa fa-binoculars fa-xs"></i> View/Edit</a>
+                    }
+                </li>
+            </ul>
+        </div>
+    </text>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

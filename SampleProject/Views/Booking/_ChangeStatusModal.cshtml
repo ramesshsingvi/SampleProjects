@@ -1,0 +1,63 @@
+﻿@using TrustonTap.Common.Models
+@using TrustonTap.Common
+@using TrustonTap.Web.ViewModels;
+
+@model BookingStatusHistory
+@{
+    List<SelectListItem> reasons = ViewData["Reasons"] as List<SelectListItem>;
+}
+
+@using (Html.BeginForm("ChangeStatus", "Booking", FormMethod.Post))
+{
+    <!-- Modal -->
+    <div id="statusModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Change Booking Status</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Status</label>
+                        @Html.HiddenFor(x => x.BookingStatus)
+                        @Model.BookingStatus.GetDescription()
+                    </div>
+                    <div class="form-group" hidden ID="pnlReason">
+                        <label>Reason</label>
+                        @Html.DropDownListFor(x => x.Reason, reasons, new { @class = "form-control" })
+                    </div>
+                    <div class="form-group">
+                        <label>Notes</label>
+                        @Html.TextAreaFor(x => x.Notes, new { @class = "form-control", @Value = "", rows = "3" })
+                    </div>
+                    @Html.HiddenFor(x => x.BookingID)
+                    <div ID="pnlError" hidden>
+                        <div class="alert alert-danger" sstyle="display:none">
+                            <strong>Error!</strong> There has been an error whilst saving the new status.
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info pull-left" data-dismiss="modal"><i class="fa fa-times fa-md"></i> Close</button>
+                    <button id="btnSave" type="submit" class="btn btn-info"><i class="fa fa-save fa-md"></i> Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    function showReason(show) {
+        if (show) {
+            $('#pnlReason').show();
+        }
+        else {
+            $('#pnlReason').hide();
+        }
+    }
+
+    showReason(@Model.BookingStatus.IsReasonRequired().ToString().ToLower())
+
+</script>

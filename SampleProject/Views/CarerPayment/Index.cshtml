@@ -1,0 +1,79 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model List<CarerStatement>
+
+@{
+    ViewBag.Title = "Outstanding Payments Due To Carer";
+    var headerInfo = ViewBag.HeaderInfo;
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+<div class="dropdown">
+    <button text="Action" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+        Action <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        <li id="makePaymentMenuItem" style="display:none">
+            <a onclick="showMakePaymentModal()"><i class="fa fa-money-bill-alt"></i> Make Payment</a>
+        </li>
+    </ul>
+</div>
+
+@Html.Partial("_Feedback")
+
+@Html.DisplayFor(x => headerInfo, "HeaderInfo")
+
+@Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(x => x.ID, "Select").Titled("<input name=\"allChk\" type=\"checkbox\" id=\"cbSelectAll\" />").SetWidth(30).RenderValueAs(x => CheckboxColumn(x)).Encoded(false).Sanitized(false).Filterable(false).Sortable(false);
+    columns.Add(x => x.Reference).Titled("ToT Invoice").RenderValueAs(x => StatementColumn(x)).Encoded(false).Sanitized(false).Filterable(true).Sortable(true);
+    columns.Add(x => x.CreatedDate).Titled("Statement Date").RenderValueAs(x => x.CreatedDate.ToShortDateString()).Filterable(true).Sortable(true);
+    columns.Add(x => x.Carer.FormattedName).Titled("Carer").RenderValueAs(x => CarerColumn(x.Carer)).Encoded(false).Sanitized(false).Filterable(true).Sortable(true);
+    columns.Add(x => x.AmountOutstanding).Titled("Amount Outstanding").RenderValueAs(x => x.AmountOutstanding.ToMoney()).Filterable(true).Sortable(true);
+})
+
+<div id="modalPlaceholder" />
+
+@helper CarerColumn(Carer carer)
+{
+    <a href="@Url.Action("Details", "Carer", new { id = carer.ID })">@carer.FormattedName</a>
+}
+
+@helper StatementColumn(CarerStatement statement)
+{
+    <a href="@Url.Action("DownloadDocument", "Document", new { id = statement.DocumentID})">@statement.Reference</a>
+}
+
+@helper CheckboxColumn(CarerStatement statement)
+{
+    <text>
+        <input type="checkbox" data-amount="@statement.AmountOutstanding" class="toggleable" value="@statement.ID" />
+    </text>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        $("#cbSelectAll").change(function () {
+            toggleAllCheckboxes()
+        });
+
+        $("input:checkbox").change(function () {
+            var total = 0
+            $("input:checkbox:checked.toggleable").each(function () {
+                var v = $(this).data("amount");
+                total += parseFloat(v);
+            });
+            $("#totalSelected").html("£" + total.toFixed(2));
+            if (total > 0) {
+                $("#makePaymentMenuItem").show();
+            } else {
+                $("#makePaymentMenuItem").hide();
+            }
+        });
+    </script>
+}

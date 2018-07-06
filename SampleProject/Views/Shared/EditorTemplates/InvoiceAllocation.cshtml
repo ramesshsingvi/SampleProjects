@@ -1,0 +1,34 @@
+﻿@using TrustonTap.Common.Models
+@using TrustonTap.Common
+
+@model KeyValuePair<CustomerStatement, decimal>
+
+@using (Html.BeginCollectionItem("Allocations"))
+{
+    <div class="row">
+        <div class="col-xs-2">
+            @Html.HiddenFor(x => x.Key.ID)
+            @Html.DisplayFor(x => x.Key.Reference)
+        </div>
+        <div class="col-xs-2">
+            @Html.DisplayFor(x => x.Key.Booking.Carer.DisplayName)
+        </div>
+        <div class="col-xs-2">
+            @Html.DisplayFor(x => x.Key.Booking.CareRecipient.DisplayName)
+        </div>
+        <div class="col-xs-2">
+            @Model.Key.Total.ToMoney()
+        </div>
+        <div class="col-xs-2">
+            @Model.Key.AmountOutstanding.ToMoney()
+        </div>
+        <div class="col-xs-2">
+            @Html.HiddenFor(x => x.Key.AmountOutstanding, new { id = "AmountOutstanding", @class = "amountOutstanding" })
+           
+                        <div class="input-group">
+                <span class="input-group-addon">£</span>
+                            @Html.TextBoxFor(x => x.Value, null, new { type = "number", step = "0.01", min = "0", max = Model.Key.AmountOutstanding, required = true, @class = "form-control currency allocationAmount" })
+            </div>
+        </div>
+    </div>
+}

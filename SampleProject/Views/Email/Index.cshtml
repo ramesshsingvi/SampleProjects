@@ -1,0 +1,40 @@
+﻿@using TrustonTap.Web;
+@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model List<EmailMessage>
+
+@{
+    ViewBag.Title = "Email Messages";
+}
+
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+@Html.Partial("_Feedback")
+
+@Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(x => x.To).Titled("To").Sortable(true).Filterable(true);
+    columns.Add(x => x.Cc).Titled("CC").Sortable(true).Filterable(true);
+    columns.Add(x => x.Subject).Titled("Subject").Sortable(true).Filterable(true);
+    columns.Add(x => x.SentDate).Titled("Sent Date").RenderValueAs(x => x.SentDate.HasValue ? x.SentDate.ToString() : "N/A").Sortable(true).Filterable(true);
+    columns.Add(x => x.ID, "Action Column").RenderValueAs(x => CustomMenuColumn(x)).Encoded(false).Sanitized(false).Titled("Action");
+}).WithPaging(20)
+
+@helper CustomMenuColumn(EmailMessage email)
+{
+    <text>
+        <div class="dropdown">
+            <button text="Action" class="btn btn-info dropdown-toggle btn-xs" data-toggle="dropdown">
+                Action <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li>
+                    <a href="@Url.Action("View", "Email", new { Id = email.ID})">View</a>
+                </li>
+            </ul>
+        </div>
+    </text>
+}

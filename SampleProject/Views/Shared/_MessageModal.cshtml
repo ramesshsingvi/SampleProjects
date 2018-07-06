@@ -1,0 +1,36 @@
+﻿@using TrustonTap.Common.Models;
+@using TrustonTap.Web.ViewModels;
+
+@model RichTextContentViewModel
+
+@using (Html.BeginForm((string)ViewBag.NextAction, ViewContext.RouteData.Values["controller"].ToString(), FormMethod.Post))
+{
+    <!-- Modal -->
+    <div id="messageModal" class="modal fade" role="dialog">
+        <div class="modal-dialog" style="width:800px;">
+            <!-- Modal content-->
+            <div class="modal-content">
+                @Html.Hidden("ID", (string)ViewBag.ID.ToString())
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Enter Message</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Message</label>
+                        @Html.TextAreaFor(x=>x.Text, new { @class = "form-control richtext" })
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info pull-left" data-dismiss="modal"><i class="fa fa-times fa-md"></i> Close</button>
+                    <button id="btnSave" type="submit" class="btn btn-info"><i class="fa fa-envelope fa-md"></i> Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<script>
+    applyStyles();
+</script>

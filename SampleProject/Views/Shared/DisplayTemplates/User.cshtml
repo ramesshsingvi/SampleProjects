@@ -1,0 +1,35 @@
+﻿@using TrustonTap.Common
+@model TrustonTap.Common.Models.User
+
+@if (Model != null)
+{
+    <strong>@Model.FormattedName [@Model.ID]</strong><br /> @Html.Raw(Utilities.FormatAddress(true,
+    Model.AddressLine1,
+    Model.AddressLine2,
+    Model.AddressLine3,
+    Model.Town,
+    Model.Postcode))
+    if (!string.IsNullOrWhiteSpace(Model.Email))
+    {
+        <text>
+            <br /><label>Email:</label> <a href="mailto:@Model.Email">@Model.Email</a>
+        </text>
+    }
+    if (!string.IsNullOrWhiteSpace(Model.Phone))
+    {
+        <text>
+            <br /><label>
+        Home Phone:
+    </label> @Model.Phone
+        </text>
+    }
+    if (!string.IsNullOrWhiteSpace(Model.MobilePhone))
+    {
+        <text>
+                <br /><label>
+        Mobile:
+    </label> @Model.MobilePhone
+            </text>
+    }
+
+}

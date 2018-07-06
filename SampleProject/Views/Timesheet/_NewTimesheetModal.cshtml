@@ -1,0 +1,76 @@
+﻿
+@using TrustonTap.Common.Models;
+@using TrustonTap.Common;
+
+@model List<Carer>
+
+@{
+    var carerSelectList = Model.Select(m => new SelectListItem { Value = m.ID.ToString(), Text = m.FormattedName.ToString() }).ToList();
+    carerSelectList.Insert(0, new SelectListItem() { Text = "Select a carer", Value = "" });
+
+    var bookingSelectList = new List<SelectListItem>();
+    bookingSelectList.Insert(0, new SelectListItem() { Text = "Select a booking", Value = "" });
+
+    var defaultDate = DateTime.Now.DayOfWeek > DayOfWeek.Wednesday ?
+                    DateTime.Now.GetWeekEndDate().ToString("dd/MM/yyyy") : DateTime.Now.AddDays(-6).GetWeekEndDate().ToString("dd/MM/yyyy");
+}
+
+@using (Html.BeginForm("New", "Timesheet", FormMethod.Post))
+{
+    <!-- Modal -->
+    <div id="timesheetModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">New Timesheet</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="container">
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="col-xs-4"><label>Carer:</label></div>
+                                <div class="col-xs-4">@Html.DropDownList("carerId", carerSelectList, new { @class = "form-control combobox", @onchange = "javascript:GetAgreements(this.value);"})</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="col-xs-4"><label>Booking:</label></div>
+                                <div class="col-xs-4">@Html.DropDownList("agreementId", bookingSelectList, new { @class = "form-control combobox ", required = "required" })</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="col-xs-4"><label>Week Ending Date:</label></div>
+                                <div class="col-xs-4">@Html.TextBox("weekEnding", defaultDate, new { required = true, @class = "weekendingpicker form-control", style="width:100px" })</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info pull-left" data-dismiss="modal"><i class="fa fa-times fa-md"></i> Close</button>
+                    <button id="btnSave" type="submit" class="btn btn-info"><i class="fa fa-save fa-md"></i> Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    $("#carerId").select2({
+        placeholder: "Select a care provider",
+        allowClear: true
+    });
+
+    $("#agreementId").select2({
+        placeholder: "Select a booking",
+        //allowClear: true
+    });
+
+    $(document).ready(function () {
+        GetAgreements(0);
+    });
+    
+</script>

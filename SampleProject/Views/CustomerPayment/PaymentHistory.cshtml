@@ -1,0 +1,79 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model List<BankTransaction>
+
+@{
+    var payer = (User)ViewBag.Payer;
+    var customer = (Customer)ViewBag.Customer;
+
+    if (customer != null)
+    {
+        ViewBag.Title = "Payment History For " + customer.ToString();
+    }
+    else if (payer != null)
+    {
+        ViewBag.Title = "Payment History For " + payer.ToString();
+    }
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+<div class="dropdown">
+    <button text="Action" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+        Action <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        <li>
+            <a onclick="javascript:showTakePaymentModal(@(customer == null?payer.ID : customer.ID))">
+                <i class="fa fa-money-bill-alt"></i> Take Payment
+            </a>
+        </li>
+    </ul>
+</div>
+
+@Html.Partial("_Feedback")
+
+@Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(x => x.ID).Titled("Payment ID").RenderValueAs(x => x.ID.ToString()).Filterable(true).Sortable(true);
+    columns.Add(x => x.Reference).Titled("Reference").RenderValueAs(x => x.Reference).Filterable(true).Sortable(true);
+    if (payer == null)
+    {
+        columns.Add(x => x.Payer).Titled("Payer").RenderValueAs(x => x.Payer.DisplayName).Filterable(true).Sortable(true);
+    }
+    columns.Add(x => x.Amount).Titled("Payment Amount").RenderValueAs(x => x.Amount.ToMoney()).Filterable(true).Sortable(true);
+    columns.Add(x => x.PaymentMethod).Titled("Payment Method").RenderValueAs(x => x.PaymentMethod.GetDescription()).Encoded(false).Sanitized(false).Filterable(true).Sortable(true);
+    columns.Add(x => x.AllocationStatus).Titled("Allocation Status").RenderValueAs(x => "<div class=\"badge\">" + x.AllocationStatus.GetDescription() + "</div>").Sanitized(false).Encoded(false).Filterable(true).Sortable(true);
+    columns.Add(x => x.PaymentDate).Titled("Payment Date").RenderValueAs(x => x.PaymentDate.ToShortDateString()).Filterable(true).Sortable(true);
+    columns.Add(x => x.Notes).Titled("Notes").RenderValueAs(x => x.Notes).Filterable(true).Sortable(true);
+    columns.Add(x => x.ID, "Action Column").RenderValueAs(x => CustomMenuColumn(x)).Encoded(false).Sanitized(false).Titled("Action");
+}).WithPaging(20)
+
+<div id="modalPlaceholder" />
+
+@helper CustomMenuColumn(BankTransaction transaction)
+{
+    <text>
+        <div class="dropdown">
+            <button text="Action" class="btn btn-info dropdown-toggle btn-xs" data-toggle="dropdown">
+                Action <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li>
+                    <a href="@Url.Action("PaymentAllocationDetails", "CustomerPayment", new { id = transaction.ID})"><i class="fa fa-binoculars"></i> View</a>
+                </li>
+                <li>
+                    <a onclick="javascript:showEditPaymentModal(@transaction.ID)"><i class="fa fa-edit"></i> Edit</a>
+                </li>
+                @if (transaction.AllocationStatus == AllocationStatus.Unallocated)
+                {
+                <li>
+                   <a id="delete" data-toggle="confirmation" data-title="Are you sure you want to delete the payment?" href="@Url.Action("Delete", "CustomerPayment", new { id = transaction.ID })"><i class="fa fa-trash-alt"></i> Delete</a>
+                </li>
+                }
+            </ul>
+        </div>
+    </text>
+}

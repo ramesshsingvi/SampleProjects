@@ -1,0 +1,379 @@
+2018-04-19 14:22:27,705 [15] ERROR Ramessh Singvi KASHNISH_MAIN: System.Data.SqlClient.SqlException (0x80131904): The INSERT statement conflicted with the FOREIGN KEY constraint "FK_Booking_[CustomerCareRecipientRelationship". The conflict occurred in database "ToT_Development", table "tot.CustomerCareRecipientRelationship", column 'ID'.
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TryHasMoreRows(Boolean& moreRows)
+   at System.Data.SqlClient.SqlDataReader.TryReadInternal(Boolean setTimeout, Boolean& more)
+   at System.Data.SqlClient.SqlDataReader.Read()
+   at System.Data.SqlClient.SqlCommand.CompleteExecuteScalar(SqlDataReader ds, Boolean returnSqlValue)
+   at System.Data.SqlClient.SqlCommand.ExecuteScalar()
+   at PetaPoco.DatabaseProvider.ExecuteScalarHelper(Database db, IDbCommand cmd) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 5090
+   at PetaPoco.SqlServerDatabaseProvider.ExecuteInsert(Database db, IDbCommand cmd, String primaryKeyName) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 7685
+   at PetaPoco.Database.ExecuteInsert(String tableName, String primaryKeyName, Boolean autoIncrement, Object poco) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 1377
+   at PetaPoco.Database.Insert(String tableName, String primaryKeyName, Boolean autoIncrement, Object poco) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 1270
+   at PetaPoco.Database.Save(String tableName, String primaryKeyName, Object poco) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 1855
+   at PetaPoco.Database.Save(Object poco) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 1870
+   at TrustonTap.Services.BookingService.BookingService.SaveBooking(Booking booking) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Services.BookingService\BookingService.cs:line 154
+   at TrustonTap.Web.Controllers.BookingController.Edit(BookingViewModel model) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\BookingController.cs:line 132
+ClientConnectionId:28832032-318e-46d5-8a68-4de65d40aa31
+Error Number:547,State:0,Class:16
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TryHasMoreRows(Boolean& moreRows)
+   at System.Data.SqlClient.SqlDataReader.TryReadInternal(Boolean setTimeout, Boolean& more)
+   at System.Data.SqlClient.SqlDataReader.Read()
+   at System.Data.SqlClient.SqlCommand.CompleteExecuteScalar(SqlDataReader ds, Boolean returnSqlValue)
+   at System.Data.SqlClient.SqlCommand.ExecuteScalar()
+   at PetaPoco.DatabaseProvider.ExecuteScalarHelper(Database db, IDbCommand cmd) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 5090
+   at PetaPoco.SqlServerDatabaseProvider.ExecuteInsert(Database db, IDbCommand cmd, String primaryKeyName) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 7685
+   at PetaPoco.Database.ExecuteInsert(String tableName, String primaryKeyName, Boolean autoIncrement, Object poco) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 1377
+   at PetaPoco.Database.Insert(String tableName, String primaryKeyName, Boolean autoIncrement, Object poco) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 1270
+   at PetaPoco.Database.Save(String tableName, String primaryKeyName, Object poco) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 1855
+   at PetaPoco.Database.Save(Object poco) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 1870
+   at TrustonTap.Services.BookingService.BookingService.SaveBooking(Booking booking) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Services.BookingService\BookingService.cs:line 154
+   at TrustonTap.Web.Controllers.BookingController.Edit(BookingViewModel model) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\BookingController.cs:line 132
+2018-04-20 13:54:19,571 [17] ERROR Ramessh Singvi KASHNISH_MAIN: System.Data.SqlClient.SqlException (0x80131904): String or binary data would be truncated.
+The statement has been terminated.
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TrySetMetaData(_SqlMetaDataSet metaData, Boolean moreInfo)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()
+   at System.Data.SqlClient.SqlDataReader.get_MetaData()
+   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, SqlDataReader ds, Boolean describeParameterEncryptionRequest)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean asyncWrite)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
+   at PetaPoco.Database.<Query>d__49`1.MoveNext() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 985
+   at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
+   at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+   at PetaPoco.Database.Fetch[T](String sql, Object[] args) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 725
+   at TrustonTap.Common.Models.CustomerStatement.get_Agreement() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\Models\CustomerStatement.cs:line 161
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+ClientConnectionId:1d3eed0f-4e29-4c80-b7bd-a9fd077d7c67
+Error Number:8152,State:14,Class:16
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TrySetMetaData(_SqlMetaDataSet metaData, Boolean moreInfo)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()
+   at System.Data.SqlClient.SqlDataReader.get_MetaData()
+   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, SqlDataReader ds, Boolean describeParameterEncryptionRequest)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean asyncWrite)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
+   at PetaPoco.Database.<Query>d__49`1.MoveNext() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 985
+   at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
+   at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+   at PetaPoco.Database.Fetch[T](String sql, Object[] args) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 725
+   at TrustonTap.Common.Models.CustomerStatement.get_Agreement() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\Models\CustomerStatement.cs:line 161
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+2018-04-20 16:31:50,852 [7] ERROR Ramessh Singvi KASHNISH_MAIN: System.Data.SqlClient.SqlException (0x80131904): String or binary data would be truncated.
+The statement has been terminated.
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TrySetMetaData(_SqlMetaDataSet metaData, Boolean moreInfo)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()
+   at System.Data.SqlClient.SqlDataReader.get_MetaData()
+   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, SqlDataReader ds, Boolean describeParameterEncryptionRequest)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean asyncWrite)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
+   at PetaPoco.Database.<Query>d__49`1.MoveNext() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 985
+   at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
+   at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+   at TrustonTap.Common.Models.CustomerStatement.get_Agreement() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\Models\CustomerStatement.cs:line 161
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+ClientConnectionId:1e4c54aa-d2cc-44c2-a12c-d807ab9f4824
+Error Number:8152,State:14,Class:16
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TrySetMetaData(_SqlMetaDataSet metaData, Boolean moreInfo)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()
+   at System.Data.SqlClient.SqlDataReader.get_MetaData()
+   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, SqlDataReader ds, Boolean describeParameterEncryptionRequest)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean asyncWrite)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
+   at PetaPoco.Database.<Query>d__49`1.MoveNext() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 985
+   at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
+   at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+   at TrustonTap.Common.Models.CustomerStatement.get_Agreement() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\Models\CustomerStatement.cs:line 161
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+2018-04-20 16:47:04,942 [7] ERROR Ramessh Singvi KASHNISH_MAIN: System.Data.SqlClient.SqlException (0x80131904): String or binary data would be truncated.
+The statement has been terminated.
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TrySetMetaData(_SqlMetaDataSet metaData, Boolean moreInfo)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()
+   at System.Data.SqlClient.SqlDataReader.get_MetaData()
+   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, SqlDataReader ds, Boolean describeParameterEncryptionRequest)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean asyncWrite)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
+   at PetaPoco.Database.<Query>d__49`1.MoveNext() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 985
+   at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
+   at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+   at PetaPoco.Database.Fetch[T](String sql, Object[] args) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 725
+   at TrustonTap.Common.Models.CustomerStatement.get_Agreement() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\Models\CustomerStatement.cs:line 161
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+ClientConnectionId:f0a57404-6554-4a02-9691-91e51466a092
+Error Number:8152,State:14,Class:16
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TrySetMetaData(_SqlMetaDataSet metaData, Boolean moreInfo)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()
+   at System.Data.SqlClient.SqlDataReader.get_MetaData()
+   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, SqlDataReader ds, Boolean describeParameterEncryptionRequest)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean asyncWrite)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader()
+   at PetaPoco.Database.<Query>d__49`1.MoveNext() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 985
+   at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
+   at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+   at PetaPoco.Database.Fetch[T](String sql, Object[] args) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 725
+   at TrustonTap.Common.Models.CustomerStatement.get_Agreement() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\Models\CustomerStatement.cs:line 161
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+2018-04-20 18:50:43,449 [8] ERROR Ramessh Singvi KASHNISH_MAIN: System.NullReferenceException: Object reference not set to an instance of an object.
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+2018-04-20 19:04:22,208 [9] ERROR Ramessh Singvi KASHNISH_MAIN: System.NullReferenceException: Object reference not set to an instance of an object.
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+2018-04-20 19:28:39,655 [6] ERROR Ramessh Singvi KASHNISH_MAIN: System.NullReferenceException: Object reference not set to an instance of an object.
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+2018-04-20 19:35:29,640 [5] ERROR Ramessh Singvi KASHNISH_MAIN: System.NullReferenceException: Object reference not set to an instance of an object.
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+2018-04-20 20:00:04,303 [9] ERROR Ramessh Singvi KASHNISH_MAIN: System.NullReferenceException: Object reference not set to an instance of an object.
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+2018-04-20 20:25:49,900 [6] ERROR Ramessh Singvi KASHNISH_MAIN: System.NullReferenceException: Object reference not set to an instance of an object.
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+2018-04-20 20:32:10,934 [6] ERROR Ramessh Singvi KASHNISH_MAIN: System.NullReferenceException: Object reference not set to an instance of an object.
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+2018-04-20 20:36:33,280 [8] ERROR Ramessh Singvi KASHNISH_MAIN: System.NullReferenceException: Object reference not set to an instance of an object.
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+2018-04-23 14:29:53,633 [11] ERROR Ramessh Singvi KASHNISH_MAIN: System.NullReferenceException: Object reference not set to an instance of an object.
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+2018-04-23 14:33:30,248 [6] ERROR Ramessh Singvi KASHNISH_MAIN: System.NullReferenceException: Object reference not set to an instance of an object.
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+2018-04-23 14:35:44,531 [8] ERROR Ramessh Singvi KASHNISH_MAIN: System.NullReferenceException: Object reference not set to an instance of an object.
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+2018-04-23 14:53:12,945 [8] ERROR Ramessh Singvi KASHNISH_MAIN: System.NullReferenceException: Object reference not set to an instance of an object.
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+2018-04-24 16:00:56,469 [7] ERROR Ramessh Singvi KASHNISH_MAIN: System.NullReferenceException: Object reference not set to an instance of an object.
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+   at TrustonTap.Web.Controllers.HomeController.<>c.<Index>b__6_2(CustomerStatement x) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 59
+   at System.Linq.Enumerable.WhereSelectListIterator`2.MoveNext()
+   at System.Linq.Enumerable.Sum(IEnumerable`1 source)
+   at System.Linq.Enumerable.Sum[TSource](IEnumerable`1 source, Func`2 selector)
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 57
+2018-04-25 17:05:13,269 [7] ERROR Ramessh Singvi KASHNISH_MAIN: System.Data.SqlClient.SqlException (0x80131904): A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: Named Pipes Provider, error: 40 - Could not open a connection to SQL Server) ---> System.ComponentModel.Win32Exception (0x80004005): The network path was not found
+   at System.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, DbConnectionPool pool, String accessToken, Boolean applyTransientFaultHandling)
+   at System.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnection owningObject, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionPool.CreateObject(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at System.Data.ProviderBase.DbConnectionPool.UserCreateRequest(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+   at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+   at System.Data.ProviderBase.DbConnectionFactory.TryGetConnection(DbConnection owningConnection, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal oldConnection, DbConnectionInternal& connection)
+   at System.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at System.Data.SqlClient.SqlConnection.TryOpenInner(TaskCompletionSource`1 retry)
+   at System.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry)
+   at System.Data.SqlClient.SqlConnection.Open()
+   at PetaPoco.Database.OpenSharedConnection() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 272
+   at PetaPoco.Database.<Query>d__122`1.MoveNext() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 2368
+   at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
+   at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+   at TrustonTap.Services.PaymentService.PaymentService.GetCarerPayments(Nullable`1 carerID, Nullable`1 carerStatementID, Nullable`1 agreementID, String originatingReference) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Services.PaymentService\PaymentService.cs:line 229
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 54
+ClientConnectionId:00000000-0000-0000-0000-000000000000
+Error Number:53,State:0,Class:20
+   at System.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, DbConnectionPool pool, String accessToken, Boolean applyTransientFaultHandling)
+   at System.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnection owningObject, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionPool.CreateObject(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at System.Data.ProviderBase.DbConnectionPool.UserCreateRequest(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+   at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+   at System.Data.ProviderBase.DbConnectionFactory.TryGetConnection(DbConnection owningConnection, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal oldConnection, DbConnectionInternal& connection)
+   at System.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at System.Data.SqlClient.SqlConnection.TryOpenInner(TaskCompletionSource`1 retry)
+   at System.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry)
+   at System.Data.SqlClient.SqlConnection.Open()
+   at PetaPoco.Database.OpenSharedConnection() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 272
+   at PetaPoco.Database.<Query>d__122`1.MoveNext() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Common\PetaPoco.cs:line 2368
+   at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
+   at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+   at TrustonTap.Services.PaymentService.PaymentService.GetCarerPayments(Nullable`1 carerID, Nullable`1 carerStatementID, Nullable`1 agreementID, String originatingReference) in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Services.PaymentService\PaymentService.cs:line 229
+   at TrustonTap.Web.Controllers.HomeController.Index() in E:\Elance\TOT\Digital_Trading\Digital Trading\TimesheetModule\TrustonTap.Web\Controllers\HomeController.cs:line 54

@@ -1,0 +1,3 @@
+﻿@model bool?
+
+<input id="@Html.IdForModel()" name="@Html.NameForModel()" type="checkbox" class="form-check-input nullable-checkbox" value="true" data-status="@(Model.HasValue?Model.Value.ToString():"")" @(Model.GetValueOrDefault()?"checked":"") />

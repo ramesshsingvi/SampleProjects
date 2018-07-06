@@ -1,0 +1,32 @@
+﻿@using TrustonTap.Common
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - T&amp;P</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="container body-content">
+        @if (ApplicationSettings.IsTestEnvironment)
+        {
+            <div style="padding-top:5px;">
+                <div class="alert alert-danger" style="text-align:center">
+                    <strong>Testing environment</strong>
+            </div>
+        </div>
+        }
+        @RenderBody()
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/gridmvc")
+    @Scripts.Render("~/bundles/custom")
+    @RenderSection("scripts", required: false)
+    @Html.PageScripts()
+</body>
+</html>

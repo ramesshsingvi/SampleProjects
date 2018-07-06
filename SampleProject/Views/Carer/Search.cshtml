@@ -1,0 +1,299 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Web.ViewModels;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model CarerSearchViewModel
+
+@{
+    ViewBag.Title = "Carer Search";
+
+    var postcodes = Enumerable.Empty<SelectListItem>().ToList();
+    if (!String.IsNullOrWhiteSpace(Model.PostCode))
+    {
+        postcodes.Add(new SelectListItem() { Text = Model.PostCode, Value = Model.PostCode, Selected = true });
+    }
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+@Html.Partial("_Feedback")
+
+@using (Html.BeginForm("Search", "Carer"))
+{
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="container">
+                <div class="row">
+                    <div class="panel panel-primary searchpanel">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Carer Details</h3>
+                            <span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-up"></i></span>
+                        </div>
+                        <div class="panel-body">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="form-group">
+                                        <div class="col-xs-2"><label>Carer Name:</label></div>
+                                        <div class="col-xs-4">
+                                            <div class="input-group">
+                                                @Html.TextBoxFor(x => x.Name, new { @class = "form-control", placeholder = "Carer Name" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group">
+                                        <div class="col-xs-2"><label>Postcode:</label></div>
+                                        <div class="col-xs-4">@Html.DropDownList("PostCode", postcodes, new { @class = "form-control combobox postcode" })</div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group">
+                                        <div class="col-xs-2"><label>Distance:</label></div>
+                                        <div class="col-xs-4">
+                                            <div class="input-group">
+                                                @Html.TextBoxFor(x => x.Distance, new { type = "number", step = "0.1", min = "0", @class = "form-control", placeholder = "Distance", aria_label = "Distance in miles", aria_describedby = "basic-addon2" })
+                                                <span class="input-group-addon" id="basic-addon2">Miles</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group">
+                                        <div class="col-xs-2"><label>Authorised:</label></div>
+                                        <div class="col-xs-4">@Html.CheckBoxFor(x => x.IsAuthorised)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="row">
+                    <div class="panel panel-primary searchpanel">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Services</h3>
+                            <span class="pull-right clickable panel-collapsed"><i class="glyphicon glyphicon-chevron-down"></i></span>
+                        </div>
+                        <div class="panel-body" style="display:none">
+                            <div class="form-group">
+                                General Home Help &amp; Companionship: @Html.CheckBoxFor(x => x.HomeHelp)<br />
+                                Personal Care &amp; Hygiene: @Html.CheckBoxFor(x => x.Personal)<br />
+                                Food Preparation &amp; Shopping: @Html.CheckBoxFor(x => x.Food)<br />
+                                Dementia Support: @Html.CheckBoxFor(x => x.Dementia)<br />
+                                Overnight: @Html.CheckBoxFor(x => x.Overnight)<br />
+                                Live-In Care: @Html.CheckBoxFor(x => x.LiveIn)<br />
+                                Gardening &amp; House Maintenance: @Html.CheckBoxFor(x => x.Gardening)<br />
+                                Transportation &amp; Errands: @Html.CheckBoxFor(x => x.Transport)<br />
+                                Paperwork &amp; Administration: @Html.CheckBoxFor(x => x.Admin)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="panel panel-primary searchpanel">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Availability</h3>
+                            <span class="pull-right clickable panel-collapsed"><i class="glyphicon glyphicon-chevron-down"></i></span>
+                        </div>
+                        <div class="panel-body" style="display:none">
+                            <div id="scheduler" class="table-layout">
+                                <div class="table-row">
+                                    <div class="table-cell fixed-width-130">
+                                        <label>Day</label>
+                                    </div>
+                                    <div class="table-cell fixed-width-90">
+                                        <label>7am-9am</label>
+                                    </div>
+                                    <div class="table-cell fixed-width-90">
+                                        <label>9am-11am</label>
+                                    </div>
+                                    <div class="table-cell fixed-width-90">
+                                        <label>11am-1pm</label>
+                                    </div>
+                                    <div class="table-cell fixed-width-90">
+                                        <label>1pm-3pm</label>
+                                    </div>
+                                    <div class="table-cell fixed-width-90">
+                                        <label>3pm-5pm</label>
+                                    </div>
+                                    <div class="table-cell fixed-width-90">
+                                        <label>5pm-7pm</label>
+                                    </div>
+                                    <div class="table-cell fixed-width-90">
+                                        <label>7-10pm</label>
+                                    </div>
+                                    <div class="table-cell fixed-width-90">
+                                        <label>Overnight</label>
+                                    </div>
+                                </div>
+                                @Html.EditorFor(x => x.CarerAvailability)
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="panel panel-primary searchpanel">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Holidays</h3>
+                            <span class="pull-right clickable panel-collapsed"><i class="glyphicon glyphicon-chevron-down"></i></span>
+                        </div>
+                        <div class="panel-body" style="display:none">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="form-group">
+                                        <div class="col-xs-2"><label>Available Between:</label></div>
+                                        <div class="col-xs-4">
+                                            <div class="input-group">
+                                                @Html.TextBoxFor(x => x.DateFrom, "{0:dd/MM/yy}", new { @class = "form-control datepicker" })
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-2"><label>And:</label></div>
+                                        <div class="col-xs-4">
+                                            <div class="input-group">
+                                                @Html.TextBoxFor(x => x.DateTo, "{0:dd/MM/yy}", new { @class = "form-control datepicker" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row pull-right">
+                    <button id="btnSearch" type="submit" class="btn btn-info" novalidate><i class="fa fa-search fa-md"></i> Search</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @Html.Grid(Model.Results).Columns(columns =>
+{
+    columns.Add(x => x.ID).Titled("Carer ID").RenderValueAs(x => x.ID.ToString()).Filterable(true).Sortable(true);
+    columns.Add(x => x.FormattedName).Titled("Name").RenderValueAs(x => CarerColumn(x)).Encoded(false).Sanitized(false).Filterable(true).Sortable(true);
+    columns.Add(x => x.Postcode).Titled("Address").RenderValueAs(x => Utilities.FormatAddress(false, x.AddressLine1, x.AddressLine2, x.AddressLine3, x.Town, x.Postcode)).Filterable(true).Sortable(false);
+
+    if (!String.IsNullOrWhiteSpace(Model.PostCode) && Model.Distance.HasValue)
+    {
+        columns.Add(x => x.Distance).Titled("Distance<br />(Miles)").RenderValueAs(x => x.Distance.ToString("F")).Filterable(true).Sortable(true);
+        columns.Add(x => x.Distance, "Driving").Titled("Driving").RenderValueAs(x => DrivingColumn(x)).Encoded(false).Sanitized(false).Filterable(false).Sortable(false);
+        columns.Add(x => x.WillingToTravelXMiles).Titled("Willing To Travel<br />(Miles)").RenderValueAs(x => x.WillingToTravelXMiles.HasValue ? ((int)x.WillingToTravelXMiles.Value).ToString() : "").Filterable(true).Sortable(true);
+    }
+
+    columns.Add(x => x.Bookings.Count).Titled("Bookings<br/>To Date").Filterable(true).Sortable(true);
+    columns.Add(x => x.LiveAgreements).Titled("Live<br/>Bookings").Filterable(true).Sortable(true);
+    columns.Add(x => x.TotalCareTime).RenderValueAs(x => Utilities.ConvertMinutesToHHMMString(x.TotalCareTime)).Titled("Total Hours<br />Worked").Filterable(true).Sortable(true);
+    columns.Add(x => x.CarerAvailability).RenderValueAs(x => ((int)CarerAvailability.GetAvailabilityScore(x.CarerAvailability, Model.CarerAvailability)).ToString()).Titled("Availability (%)").Filterable(true).Sortable(true);
+    columns.Add(x => x.Phone).RenderValueAs(x => SendSmsColumn(x)).Titled("").Filterable(false).Encoded(false).Sanitized(false).Sortable(false);
+})
+}
+<div id="modalPlaceholder" />
+
+@helper DrivingColumn(Carer carer)
+{
+    <text>
+        <span class="distance" data-postcode="@carer.Postcode" id="distance_@carer.ID"><i class="fa fa-spinner fa-spin"></i></span>
+    </text>
+}
+
+@helper CarerColumn(Carer carer)
+{
+    <a href="@Url.Action("Details", "Carer", new { id = carer.ID})">@carer.FormattedName</a>
+}
+
+@helper SendSmsColumn(Carer carer)
+{
+    var resSource = SmsResponseSource.Support;
+    if (carer.MobilePhone.IsMobilePhoneNumber())
+    {
+            <text>
+                <a id="btnSendSMS" class="btn btn-info btn-sm" novalidate onclick="openSendSmsWindow('@carer.ID', '@carer.MobilePhone', '@resSource')"><i class="fa fa-mobile-alt fa-sm"></i> Send SMS</a>
+            </text>
+    }
+    else if (carer.Phone.IsMobilePhoneNumber())
+    {
+            <text>
+                <a id="btnSendSMS" class="btn btn-info btn-sm" novalidate onclick="openSendSmsWindow('@carer.ID', '@carer.Phone', '@resSource')"><i class="fa fa-mobile-alt fa-sm"></i> Send SMS</a>
+            </text>
+    }
+}
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.distance').each(function () {
+                var elem = $(this);
+                var fromAddress = $(this).data("postcode");
+                var toAddress = $("#PostCode").val();
+                var delayInMsBetweenDistanceLookups = @ApplicationSettings.DelayInMsBetweenDistanceLookups;
+                var delay = delayInMsBetweenDistanceLookups
+                
+                setTimeout(function(){
+                    if (elem.has('.fa-spinner').length) {
+                        $.ajax({
+                            type: 'POST',
+                            data: {
+                                address1: fromAddress,
+                                address2: toAddress
+                            },
+                            url: '/addresslookup/GetDrivingDistanceJSON/'
+                        }).then(function (data) {
+                            if (data.success) {
+                                elem.html(data.display);
+                            }
+                        });
+                    }}, delay);
+                delay += delayInMsBetweenDistanceLookups;
+            });
+        });
+
+        $(".postcode").select2({
+            ajax: {
+                url: '/AddressLookup/SearchPostcodesJSON/',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        search: params.term
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: $.map(data.items, function (obj) {
+                            return { id: obj, text: obj };
+                        })
+                    };
+                },
+                cache: true
+            },
+            placeholder: 'Search with a postcode',
+            allowClear: true,
+            escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+            minimumInputLength: 1,
+            //templateResult: formatRepo,
+            //templateSelection: formatRepoSelection
+        });
+
+        $('.nullable-checkbox').checkbox();
+
+        $(document).on('click', '.panel-heading span.clickable', function (e) {
+            var $this = $(this);
+            if (!$this.hasClass('panel-collapsed')) {
+                $this.parents('.searchpanel').find('.panel-body').slideUp();
+                $this.addClass('panel-collapsed');
+                $this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+            } else {
+                $this.parents('.searchpanel').find('.panel-body').slideDown();
+                $this.removeClass('panel-collapsed');
+                $this.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
+            }
+        })
+    </script>
+}

@@ -1,0 +1,66 @@
+﻿@using TrustonTap.Web;
+@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model List<CarerStatement>
+
+@{
+    ViewBag.Title = "Search Results";
+    var headerInfo = ViewBag.HeaderInfo;
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+<div class="dropdown">
+    <button text="Action" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+        Action <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        <li>
+            <a onclick="javascript: showSearchCarerStatementModal()">
+                <i class="fa fa-search"></i> Search
+            </a>
+        </li>
+    </ul>
+</div>
+
+@Html.Partial("_Feedback")
+
+@Html.DisplayFor(x => headerInfo, "HeaderInfo")
+
+@Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(x => x.Reference).Titled("Reference").Sortable(true);
+    columns.Add(x => x.CarerID).Titled("Carer Number").Sortable(true);
+    columns.Add(x => x.Carer.FormattedName).Titled("Carer").RenderValueAs(x => CarerColumn(x.Carer)).Encoded(false).Sanitized(false).Sortable(true);
+    columns.Add(x => x.Total).Titled("Total").RenderValueAs(x => x.Total.ToMoney()).Sortable(true);
+    columns.Add(x => x.AmountOutstanding).Titled("Amount Due To Carer").RenderValueAs(x => x.AmountOutstanding.ToMoney()).Sortable(true);
+    columns.Add(x => x.AmountOutstanding, "Fully Paid").Titled("Paid To Carer?").RenderValueAs(x => (x.Status != CarerStatementStatus.Created && x.AmountOutstanding == 0).ToYesNo()).Sortable(true);
+    columns.Add(x => x.Status).RenderValueAs(x => "<div class=\"badge\">" + x.Status.GetDescription() + "</div>").Encoded(false).Sanitized(false).Titled("Status").Sortable(true);
+    columns.Add(x => x.ID, "Action Column").RenderValueAs(x => CustomMenuColumn(x)).Encoded(false).Sanitized(false).Titled("Action");
+}).WithPaging(20)
+
+<div id="modalPlaceholder" />
+@helper CarerColumn(Carer carer)
+{
+    <a href="@Url.Action("Details", "Carer", new { id = carer.ID})">@carer.FormattedName</a>
+}
+
+<div id="modalPlaceholder" />
+
+@helper CustomMenuColumn(CarerStatement carerStatement)
+{
+    <text>
+        <div class="dropdown">
+            <button text="Action" class="btn btn-info dropdown-toggle btn-xs" data-toggle="dropdown">
+                Action <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li>
+                    <a href="@Url.Action("StatementDetails", "CarerStatement", new { Id = carerStatement.ID})"><i class="fa fa-eye"></i> View</a>
+                </li>
+            </ul>
+        </div>
+    </text>
+}

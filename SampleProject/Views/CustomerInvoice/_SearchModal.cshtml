@@ -1,0 +1,51 @@
+﻿@using TrustonTap.Common.Services.StatementService
+
+@model Search
+
+@using (Html.BeginForm("Search", "CustomerInvoice", FormMethod.Get))
+{
+    <!-- Modal -->
+    <div id="searchModal" class="modal fade draggable-modal" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Search For Invoice</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Reference</label>
+
+                                @Html.TextBoxFor(x => x.StatementReference, null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Customer/Payer Name</label>
+                                @Html.TextBoxFor(x => x.CustomerName, null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Carer Name</label>
+                                @Html.TextBoxFor(x => x.CarerName, null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                @Html.CheckBoxFor(x => x.HeldFromStatement) <label>Held From Carer Statement</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info pull-left" data-dismiss="modal"><i class="fa fa-times fa-md"></i> Close</button>
+                    <button id="btnSave" type="submit" class="btn btn-info"><i class="fa fa-search fa-md"></i> Search</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

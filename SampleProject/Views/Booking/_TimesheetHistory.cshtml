@@ -1,0 +1,42 @@
+﻿@using TrustonTap.Common
+@using TrustonTap.Common.Models
+
+@model List<TimesheetWeek>
+
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Reference</th>
+                <th>Carer</th>
+                <th>Week Ending</th>
+                <th>Hours Worked</th>
+                <th>Expenses</th>
+                <th>Mileage</th>
+            </tr>
+        </thead>
+
+        @foreach (var timesheet in Model)
+        {
+        <tr>
+            <td>
+                <a target='_blank' href='@Url.Action("View", "Timesheet", new { id = timesheet.ID })'>@timesheet.Reference</a>
+            </td>
+            <td>
+                <a target='_blank' href='@Url.Action("Details", "Carer", new { id = timesheet.CarerID })'>@timesheet.Carer.FormattedName</a>
+            </td>
+            <td>
+                @timesheet.WeekEnding.ToShortDateString()
+            </td>
+            <td>
+                @((timesheet.HoursWorked * 60).ConvertMinutesToHHMMString())
+            </td>
+            <td>
+                @(timesheet.Expenses.Where(y => y.Type == ExpenseType.Other).Sum(y => y.AmountClaimed).ToMoney())
+            </td>
+            <td>
+                @(timesheet.Expenses.Where(y => y.Type == ExpenseType.Mileage).Sum(y => y.AmountClaimed).ToMoney())
+            </td>
+        </tr>
+        }
+    </table>

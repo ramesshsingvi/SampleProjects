@@ -1,0 +1,51 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model CustomerStatement
+
+@{
+    ViewBag.Title = "Invoice For " + Model.Booking.Customer.DisplayName;
+    var headerInfo = ViewBag.HeaderInfo;
+}
+<h2>@ViewBag.Title<span class="badge pull-right">@Model.Status.GetDescription()</span></h2>
+
+<h3>@ViewBag.Message</h3>
+
+<div class="dropdown">
+    <button text="Action" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+        Action <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        @if ((Model.PermitCancel))
+        {
+            <li><a href="@Url.Action("Cancel", "CustomerInvoice", new { id = Model.ID })"  id="cancelInvoice" data-toggle="confirmation" data-title="Are you sure you want to cancel the invoice?"><i class="fa fa-times"></i> Cancel Invoice</a></li>
+        }
+        @if (!Model.Timesheet.CarerPaymentGenerated)
+        {
+            if (!Model.Timesheet.HoldFromCarerStatement)
+            {
+                <li>
+                    <a href="@Url.Action("HoldFromCarerStatement", "Timesheet", new { id = Model.Timesheet.ID })" id="holdback" data-toggle="confirmation" data-title="Are you sure you want to hold back the timesheet?"><i class="fa fa-exclamation-triangle"></i> Hold From Carer Statement</a>
+                </li>
+            }
+            else
+            {
+                <li>
+                    <a href="@Url.Action("HoldFromCarerStatement", "Timesheet", new { id = Model.Timesheet.ID, hold = false })"><i class="fa fa-exclamation-triangle"></i> End Hold From Carer Statement</a>
+                </li>
+            }
+        }
+    </ul>
+</div>
+
+@Html.Partial("_Feedback")
+
+@Html.DisplayFor(x => headerInfo, "HeaderInfo")
+
+@Html.Grid(Model.Payments).Columns(columns =>
+{
+    columns.Add(x => x.Type).RenderValueAs(x => x.Type.GetDescription() + (x.Type == PaymentType.Expense ? " - " +  (x.Expense==null? "Deleted" : x.Expense.Type.GetDescription())  : "")).Titled("Type").Sortable(true);
+    columns.Add(x => x.Total).Titled("Amount").RenderValueAs(x => x.Total.ToMoney()).Sortable(true);
+    columns.Add(x => x.Notes).Titled("Notes").RenderValueAs(x => x.Notes.Truncate(255)).Sortable(true);
+}).WithPaging(20)

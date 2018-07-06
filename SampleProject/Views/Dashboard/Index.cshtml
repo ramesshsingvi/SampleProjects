@@ -1,0 +1,355 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using TrustonTap.Web.ViewModels;
+@using GridMvc.Html;
+@using MoreLinq;
+
+@model DashboardViewModel
+
+@{
+    ViewBag.Title = "Dashboard";
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+<div class="row">
+    <div class="col-xs-4 dashboard-container">
+        <div class="dashboard-inner">
+            <h4 class="text-center"><strong>Timesheet Summary</strong></h4><br />
+            <table class="table">
+                <tr>
+                    <th></th>
+                    <th><strong>Saved</strong></th>
+                    <th><strong>Submitted</strong></th>
+                    <th><strong>Rejected</strong></th>
+                    <th><strong>Awaiting Invoice</strong></th>
+                </tr>
+                <tr>
+                    <td><strong>This Week</strong></td>
+                    <td><a target='_blank' href='@Url.Action("Index", "Timesheet")?grid-filter=WeekEnding__1__@Model.ThisWeek.WeekEnding.ToString("yyyy-MM-dd")&grid-filter=Status__1__1'>@Model.ThisWeek.TimesheetsSaved.Count()</a></td>
+                    <td><a target='_blank' href='@Url.Action("Index", "Timesheet")?includeInvoiced=true&grid-filter=WeekEnding__1__@Model.ThisWeek.WeekEnding.ToString("yyyy-MM-dd")&grid-filter=Status__1__5'>@Model.ThisWeek.TimesheetsSubmitted.Count()</a></td>
+                    <td><a target='_blank' href='@Url.Action("Index", "Timesheet")?grid-filter=WeekEnding__1__@Model.ThisWeek.WeekEnding.ToString("yyyy-MM-dd")&grid-filter=Status__1__4'>@Model.ThisWeek.TimesheetsRejected.Count()</a></td>
+                    <td><a target='_blank' href='@Url.Action("Index", "Timesheet")?grid-filter=WeekEnding__1__@Model.ThisWeek.WeekEnding.ToString("yyyy-MM-dd")&grid-filter=Status__1__5'>@Model.ThisWeek.TimesheetsAwaitingInvoice.Count()</a></td>
+                </tr>
+                <tr>
+                    <td><strong>Last Week</strong></td>
+                    <td><a target='_blank' href='@Url.Action("Index", "Timesheet")?grid-filter=WeekEnding__1__@Model.LastWeek.WeekEnding.ToString("yyyy-MM-dd")&grid-filter=Status__1__1'>@Model.LastWeek.TimesheetsSaved.Count()</a></td>
+                    <td><a target='_blank' href='@Url.Action("Index", "Timesheet")?includeInvoiced=true&grid-filter=WeekEnding__1__@Model.LastWeek.WeekEnding.ToString("yyyy-MM-dd")&grid-filter=Status__1__5'>@Model.LastWeek.TimesheetsSubmitted.Count()</a></td>
+                    <td><a target='_blank' href='@Url.Action("Index", "Timesheet")?grid-filter=WeekEnding__1__@Model.LastWeek.WeekEnding.ToString("yyyy-MM-dd")&grid-filter=Status__1__4'>@Model.LastWeek.TimesheetsRejected.Count()</a></td>
+                    <td><a target='_blank' href='@Url.Action("Index", "Timesheet")?grid-filter=WeekEnding__1__@Model.LastWeek.WeekEnding.ToString("yyyy-MM-dd")&grid-filter=Status__1__5'>@Model.LastWeek.TimesheetsAwaitingInvoice.Count()</a></td>
+                </tr>
+                <tr>
+                    <td><strong>Older</strong></td>
+                    <td><a target='_blank' href='@Url.Action("Index", "Timesheet")?grid-filter=WeekEnding__6__@Model.LastWeek.WeekEnding.ToString("yyyy-MM-dd")&grid-filter=Status__1__1'>@Model.Older.TimesheetsSaved.Count()</a></td>
+                    <td><a target='_blank' href='@Url.Action("Index", "Timesheet")?includeInvoiced=true&grid-filter=WeekEnding__6__@Model.LastWeek.WeekEnding.ToString("yyyy-MM-dd")&grid-filter=Status__1__5'>@Model.Older.TimesheetsSubmitted.Count()</a></td>
+                    <td><a target='_blank' href='@Url.Action("Index", "Timesheet")?grid-filter=WeekEnding__6__@Model.LastWeek.WeekEnding.ToString("yyyy-MM-dd")&grid-filter=Status__1__4'>@Model.Older.TimesheetsRejected.Count()</a></td>
+                    <td><a target='_blank' href='@Url.Action("Index", "Timesheet")?grid-filter=WeekEnding__6__@Model.LastWeek.WeekEnding.ToString("yyyy-MM-dd")&grid-filter=Status__1__5'>@Model.Older.TimesheetsAwaitingInvoice.Count()</a></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="col-xs-4 dashboard-container">
+        <div class="dashboard-inner">
+            <h4 class="text-center"><strong>Customer Invoices</strong></h4><br />
+            <table class="table">
+                <tr>
+                    <th></th>
+                    <th><strong>Invoiced</strong></th>
+                    <th><strong>Value</strong></th>
+                </tr>
+                <tr>
+                    <td><strong>This Week (@Model.ThisWeek.WeekEnding.GetWeekString())</strong></td>
+                    <td>@Model.ThisWeek.CustomerInvoices.Count()</td>
+                    <td>@Model.ThisWeek.CustomerInvoices.Sum(x => x.Total).ToMoney()</td>
+                </tr>
+                <tr>
+                    <td><strong>Last Week (@Model.LastWeek.WeekEnding.GetWeekString())</strong></td>
+                    <td>@Model.LastWeek.CustomerInvoices.Count()</td>
+                    <td>@Model.LastWeek.CustomerInvoices.Sum(x => x.Total).ToMoney()</td>
+                </tr>
+            </table>
+            <br />
+            <strong>Generated But Not Yet Posted: </strong>
+            <a tabindex="0"
+               role="button"
+               data-html="true"
+               data-toggle="popoverfull"
+               data-trigger="focus"
+               title="<b>Invoices Not Yet Posted</b>"
+               data-content="<table class='table'>
+    <tr>
+        <th><strong>Reference</strong></th>
+        <th><strong>Carer</strong></th>
+        <th><strong>Invoice Amount</strong></th>
+    </tr>
+    @foreach (var invoice in Model.CustomerInvoicesGeneratedNotSent)
+    {
+        <tr>
+            <td>
+                <a target='_blank' href='@Url.Action("InvoiceDetails", "CustomerInvoice", new { id = invoice.ID})'>@invoice.Reference</a>
+            </td>
+            <td>
+                <a target='_blank' href='@Url.Action("Details", "Carer", new { id = invoice.Booking.CarerID })'>@invoice.Booking.Carer.FormattedName</a>
+            </td>
+            <td>
+                @invoice.Total.ToMoney()
+            </td>
+        </tr>
+    }
+        </table>
+        ">@Model.CustomerInvoicesGeneratedNotSent.Count()</a>
+            <br />
+
+            <strong>Held Back: </strong>
+            <a tabindex="0"
+               role="button"
+               data-html="true"
+               data-toggle="popoverfull"
+               data-trigger="focus"
+               title="<b>Timesheets On Hold</b>"
+               data-content="<table class='table'>
+        <tr>
+        <th><strong>Reference</strong></th>
+        <th><strong>Carer</strong></th>
+        </tr>
+        @foreach (var timesheet in Model.TimesheetsOnHold)
+        {
+            <tr>
+            <td>
+            <a target='_blank' href='@Url.Action("View", "Timesheet", new { id = timesheet.ID })'>@timesheet.Reference</a>
+            </td>
+            <td>
+            <a target='_blank' href='@Url.Action("Details", "Carer", new { id = timesheet.CarerID })'>@timesheet.Carer.FormattedName</a>
+            </td>
+            </tr>
+        }
+        </table>
+        ">@Model.TimesheetsOnHold.Count()</a><br />
+            <strong>Fully Paid &amp; Awaiting Carer Invoice: </strong>
+            <a tabindex="0"
+               role="button"
+               data-html="true"
+               data-toggle="popoverfull"
+               data-trigger="focus"
+               title="<b>Fully Paid &amp; Awaiting Carer Invoice</b>"
+               data-content="<table class='table'>
+    <tr>
+        <th><strong>Reference</strong></th>
+        <th><strong>Carer</strong></th>
+        <th><strong>Invoice Amount</strong></th>
+    </tr>
+    @foreach (var invoice in Model.CustomerInvoicesPaidAwaitingCarerInvoice)
+    {
+        <tr>
+            <td>
+                <a target='_blank' href='@Url.Action("InvoiceDetails", "CustomerInvoice", new { id = invoice.ID})'>@invoice.Reference</a>
+            </td>
+            <td>
+                <a target='_blank' href='@Url.Action("Details", "Carer", new { id = invoice.Booking.CarerID })'>@invoice.Booking.Carer.FormattedName</a>
+            </td>
+            <td>
+                @invoice.Total.ToMoney()
+            </td>
+        </tr>
+    }
+        </table>
+        ">@Model.CustomerInvoicesPaidAwaitingCarerInvoice.Count() (@Model.CustomerInvoicesPaidAwaitingCarerInvoice.Sum(x=>x.Total).ToMoney())</a>
+        </div>
+    </div>
+    <div class="col-xs-4 dashboard-container">
+        <div class="dashboard-inner">
+
+
+            <h4 class="text-center"><strong>Balance Outstanding</strong></h4><br />
+
+
+
+           
+
+
+
+            @{
+                var unpaidInvoices = Model.CustomerInvoicesDue.Where(x => x.Status == CustomerStatementStatus.SentToCustomer).ToList();
+            }
+            <strong>Sent To Customer: </strong>
+            <a tabindex="0"
+               role="button"
+               data-html="true"
+               data-toggle="popoverfull"
+               data-trigger="focus"
+               title="<b>Sent To Customer</b>"
+               data-content="<table class='table'>
+                             <tr>
+                                 <th><strong>Reference</strong></th>
+                                 <th><strong>Carer</strong></th>
+                                 <th><strong>Customer</strong></th>
+                                 <th><strong>Invoice Amount</strong></th>
+                             </tr>
+        @foreach (var invoice in unpaidInvoices)
+        {
+            <tr>
+                <td>
+                    <a target='_blank' href='@Url.Action("InvoiceDetails", "CustomerInvoice", new { id = invoice.ID})'>@invoice.Reference</a>
+                </td>
+                <td>
+                    <a target='_blank' href='@Url.Action("Details", "Carer", new { id = invoice.Booking.CarerID })'>@invoice.Booking.Carer.FormattedName</a>
+</td>
+                <td>
+                    <a target='_blank' href='@Url.Action("Details", "Customer", new { id = invoice.Booking.CustomerID})'>@invoice.Booking.Customer.FormattedName</a>
+</td>
+                <td>
+                    @invoice.Total.ToMoney()
+                </td>
+            </tr>
+        }
+        </table>
+        ">@unpaidInvoices.Count() (@(unpaidInvoices.Sum(x => x.Total).ToMoney()))</a>
+
+            @{
+                var partiallyPaidInvoices = Model.CustomerInvoicesDue.Where(x => x.Status == CustomerStatementStatus.PartiallyPaid).ToList();
+            }
+            <br />
+            <strong>Partially Paid: </strong>
+            <a tabindex="0"
+               role="button"
+               data-html="true"
+               data-toggle="popoverfull"
+               data-trigger="focus"
+               title="<b>Partially Paid Invoices</b>"
+               data-content="<table class='table'>
+                             <tr>
+                                 <th><strong>Reference</strong></th>
+                                 <th><strong>Carer</strong></th>
+                                 <th><strong>Invoice Amount</strong></th>
+                                 <th><strong>Amount Outstanding</strong></th>
+                             </tr>
+        @foreach (var invoice in partiallyPaidInvoices)
+        {
+            <tr>
+                <td>
+                    <a target='_blank'  href='@Url.Action("InvoiceDetails", "CustomerInvoice", new { id = invoice.ID})'>@invoice.Reference</a>
+                </td>
+                <td>
+                    <a target='_blank' href='@Url.Action("Details", "Carer", new { id = invoice.Booking.CarerID })'>@invoice.Booking.Carer.FormattedName</a>
+                </td>
+                <td>
+                    @invoice.Total.ToMoney()
+                </td>
+                <td>
+                    @invoice.AmountOutstanding.ToMoney()
+                </td>
+            </tr>
+        }
+        </table>
+        ">@partiallyPaidInvoices.Count() (@(partiallyPaidInvoices.Sum(x => x.AmountOutstanding).ToMoney()))</a>
+            <br />
+            <strong>
+                Unallocated:
+            </strong>
+            <a target='_blank' href="@Url.Action("Allocate", "CustomerPayment")">
+                @Model.UnallocatedPayments.Count() (-@Model.UnallocatedPayments.Sum(x => x.AmountUnallocated).ToMoney())
+            </a>
+        </div>
+    </div>
+    <div class="col-xs-4 dashboard-container">
+        <div class="dashboard-inner">
+            <h4 class="text-center"><strong>Carer Invoices</strong></h4><br />
+<strong>Generated But Not Yet Posted: </strong>
+<a tabindex="0"
+   role="button"
+   data-html="true"
+   data-toggle="popoverfull"
+   data-trigger="focus"
+   title="<b>Invoices Not Yet Posted</b>"
+   data-content="<table class='table'>
+    <tr>
+        <th><strong>Reference</strong></th>
+        <th><strong>Carer</strong></th>
+        <th><strong>Invoice Amount</strong></th>
+    </tr>
+    @foreach (var statement in Model.CarerStatementsGeneratedNotSent)
+    {
+        <tr>
+            <td>
+                <a target='_blank' href='@Url.Action("StatementDetails", "CarerStatement", new { id = statement.ID})'>@statement.Reference</a>
+            </td>
+            <td>
+                @statement.Carer.FormattedName
+            </td>
+            <td>
+                @statement.Total.ToMoney()
+            </td>
+        </tr>
+    }
+        </table>
+        ">@Model.CarerStatementsGeneratedNotSent.Count()  (@Model.CarerStatementsGeneratedAwaitingPayment.Sum(x => x.Total).ToMoney())</a><br />
+            <strong>Awaiting Payment: </strong>
+            <a tabindex="0"
+               role="button"
+               data-html="true"
+               data-toggle="popoverfull"
+               data-trigger="focus"
+               title="<b>Invoices Awaiting Payment</b>"
+               data-content="<table class='table'>
+    <tr>
+        <th><strong>Reference</strong></th>
+        <th><strong>Carer</strong></th>
+        <th><strong>Invoice Amount</strong></th>
+    </tr>
+    @foreach (var statement in Model.CarerStatementsGeneratedAwaitingPayment)
+    {
+        <tr>
+            <td>
+                <a target='_blank' href='@Url.Action("StatementDetails", "CarerStatement", new { id = statement.ID})'>@statement.Reference</a>
+            </td>
+            <td>
+                @statement.Carer.FormattedName
+            </td>
+            <td>
+                @statement.Total.ToMoney()
+            </td>
+        </tr>
+    }
+        </table>
+        ">@Model.CarerStatementsGeneratedAwaitingPayment.Count() (@Model.CarerStatementsGeneratedAwaitingPayment.Sum(x=>x.AmountOutstanding).ToMoney())</a><br />
+            <strong>Held Back: </strong>
+            <a tabindex="0"
+               role="button"
+               data-html="true"
+               data-toggle="popoverfull"
+               data-trigger="focus"
+               title="<b>Invoices on Hold</b>"
+               data-content="<table class='table'>
+                                 <tr>
+                                     <th><strong>Reference</strong></th>
+                                     <th><strong>Carer</strong></th>
+                                     <th><strong>Customer</strong></th>
+                                     <th><strong>Invoice Amount</strong></th>
+                                 </tr>
+    @foreach (var invoice in Model.CustomerInvoicesOnHold)
+    {
+        <tr>
+            <td>
+                <a target='_blank'  href='@Url.Action("InvoiceDetails", "CustomerInvoice", new { id = invoice.ID})'>@invoice.Reference</a>
+            </td>
+            <td>
+                <a target='_blank' href='@Url.Action("Details", "Carer", new { id = invoice.Booking.CarerID })'>@invoice.Booking.Carer.FormattedName</a>
+            </td>
+            <td>
+                <a target='_blank' href='@Url.Action("Details", "Customer", new { id = invoice.Booking.CustomerID})'>@invoice.Booking.Customer.FormattedName</a>
+            </td>
+            <td>
+                @invoice.Total.ToMoney()
+            </td>
+        </tr>
+    }
+        </table>
+        ">@Model.CustomerInvoicesOnHold.Count()</a><br />
+            <br />
+
+
+
+
+        </div>
+    </div>
+</div>

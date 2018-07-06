@@ -1,0 +1,39 @@
+﻿@using TrustonTap.Web.Controllers;
+
+@if (ViewContext.RouteData.Values["controller"].ToString().ToLower() != "home")
+{
+    var controller = ViewContext.Controller;
+    var defaultAction = ControllerMetadataAttribute.GetDefaultAction(controller);
+
+    var pageTitle = (string)ViewBag.Title;
+    if (String.IsNullOrWhiteSpace(pageTitle))
+    {
+        pageTitle = ViewContext.RouteData.Values["action"].ToString().SplitCamelCase();
+    }
+    <div class="row breadcrumb-container">
+        <div class="col-xs-10">
+            <ol class="breadcrumb">
+                <li>
+                    @Html.ActionLink("Home", "Index", "Home")
+                </li>
+
+                @if (!String.IsNullOrWhiteSpace(defaultAction))
+                {
+                    <li>
+                        @Html.ActionLink(ControllerMetadataAttribute.GetFriendlyName(controller), defaultAction)
+                    </li>
+                }
+
+                <li class="active">
+                    @Html.Raw(pageTitle)
+                </li>
+            </ol>
+        </div>
+        <div class="col-xs-2">
+            <div  class="pull-right">
+            <a href="javascript: location.reload();" title="Refresh Page"> <i class="fa fa-redo"></i></a>
+            </div>
+        </div>
+    </div>
+}
+

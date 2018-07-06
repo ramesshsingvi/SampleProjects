@@ -1,0 +1,38 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model List<TimesheetWeek>
+
+@{
+    ViewBag.Title = "Carer Statement For " + @ViewBag.Carer;
+    var headerInfo = ViewBag.HeaderInfo;
+}
+<h2>@ViewBag.Title<span class="badge pull-right">@ViewBag.Status</span></h2>
+
+<h3>@ViewBag.Message</h3>
+
+@Html.DisplayFor(x => headerInfo, "HeaderInfo")
+
+@Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(x => x.Reference).Titled("Timesheet").RenderValueAs(x => TimesheetColumn(x)).Encoded(false).Sanitized(false).Filterable(true).Sortable(true);
+    columns.Add(x => x.Agreement.CareRecipientOrCustomer).Titled("Care Recipient/Customer").Sortable(true).Filterable(true);
+    columns.Add(x => x.Carer.FormattedName).Titled("Carer").RenderValueAs(x => CarerColumn(x.Carer)).Encoded(false).Sanitized(false).Filterable(true).Sortable(true);
+    columns.Add(x => x.WeekEnding).RenderValueAs(x => x.WeekEnding.ToShortDateString()).Titled("Week Ending").Sortable(true).Filterable(true);
+    columns.Add(x => x.HoursWorked).RenderValueAs(x => (x.HoursWorked * 60).ConvertMinutesToHHMMString()).Titled("Hours Worked").Sortable(true).Filterable(true);
+    columns.Add(x => x.Expenses, "Expenses").RenderValueAs(x => x.Expenses.Where(y => y.Type == ExpenseType.Other).Sum(y => y.AmountClaimed).ToMoney()).Titled("Other Expenses").Sortable(false).Filterable(false);
+    columns.Add(x => x.Expenses, "Mileage").RenderValueAs(x => x.Expenses.Where(y => y.Type == ExpenseType.Mileage).Sum(y => Convert.ToDecimal(y.ExtraInfo)).ToString()).Titled("Mileage").Sortable(false).Filterable(false);
+}).WithPaging(20)
+
+<div id="modalPlaceholder" />
+
+@helper CarerColumn(Carer carer)
+{
+    <a href="@Url.Action("Details", "Carer", new { id = carer.ID})">@carer.FormattedName</a>
+}
+
+@helper TimesheetColumn(TimesheetWeek timesheet)
+{
+    <a href="javascript:void(0);" onclick="showTimesheetViewModal(@timesheet.ID.ToString());">@timesheet.Reference</a>
+}

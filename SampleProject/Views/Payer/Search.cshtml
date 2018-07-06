@@ -1,0 +1,85 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Web.ViewModels;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model PayerSearchViewModel
+
+@{
+    ViewBag.Title = "Payer Search";
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+@Html.Partial("_Feedback")
+
+@using (Html.BeginForm("Search", "Payer", FormMethod.Get))
+{
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="container">
+                <div class="row">
+                    <div class="panel panel-primary searchpanel">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Payer Details</h3>
+                            <span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-up"></i></span>
+                        </div>
+                        <div class="panel-body">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="form-group">
+                                        <div class="col-xs-2"><label>Payer Name:</label></div>
+                                        <div class="col-xs-4">
+                                            <div class="input-group">
+                                                @Html.TextBoxFor(x => x.Name, new { @class = "form-control", placeholder = "Payer Name" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row pull-right">
+                    <button id="btnSearch" type="submit" class="btn btn-info"><i class="fa fa-search fa-md"></i> Search</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    if (Model.Results != null)
+    {
+    @Html.Grid(Model.Results).Columns(columns =>
+{
+    columns.Add(x => x.ID).Titled("Payer ID").RenderValueAs(x => x.ID.ToString()).Filterable(true).Sortable(true);
+    columns.Add(x => x.FormattedName).Titled("Name").RenderValueAs(x => CustomerColumn(x)).Encoded(false).Sanitized(false).Filterable(true).Sortable(true);
+    columns.Add(x => x.Postcode).Titled("Address").RenderValueAs(x => Utilities.FormatAddress(false, x.AddressLine1, x.AddressLine2, x.AddressLine3, x.Town, x.Postcode)).Filterable(true).Sortable(false);
+}).WithPaging(20)
+    }
+}
+<div id="modalPlaceholder" />
+
+@helper CustomerColumn(Payer payer)
+{
+    <a href="@Url.Action("Details", "Payer", new { id = payer.ID})">@payer.FormattedName</a>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(document).on('click', '.panel-heading span.clickable', function (e) {
+            var $this = $(this);
+            if (!$this.hasClass('panel-collapsed')) {
+                $this.parents('.searchpanel').find('.panel-body').slideUp();
+                $this.addClass('panel-collapsed');
+                $this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+            } else {
+                $this.parents('.searchpanel').find('.panel-body').slideDown();
+                $this.removeClass('panel-collapsed');
+                $this.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
+            }
+        })
+    </script>
+}

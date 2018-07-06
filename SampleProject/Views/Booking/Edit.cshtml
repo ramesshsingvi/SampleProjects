@@ -1,0 +1,913 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using TrustonTap.Web.ViewModels;
+
+@model BookingViewModel
+
+@{
+    ViewBag.Title = (Model.IsNew ? "New Booking" : $"Edit Booking {Model.Booking.Reference}");
+    var headerInfo = ViewBag.HeaderInfo;
+
+    var payers = Enumerable.Empty<SelectListItem>().ToList();
+    if (Model.Booking.PayerID > 0)
+    {
+        payers.Add(new SelectListItem() { Text = $"{Model.Booking.Payer.DisplayName} [{Model.Booking.Payer.ID}] {Utilities.FormatAddress(false, new string[] { Model.Booking.Payer.AddressLine1, Model.Booking.Payer.Postcode })}", Value = Model.Booking.PayerID.ToString(), Selected = true });
+    }
+
+    var carers = Enumerable.Empty<SelectListItem>().ToList();
+    if (Model.Booking.CarerID > 0 && Model.Booking.Carer != null)
+    {
+        carers.Add(new SelectListItem() { Text = $"{Model.Booking.Carer.DisplayName} [{Model.Booking.Carer.ID}] {Utilities.FormatAddress(false, new string[] { Model.Booking.Carer.AddressLine1, Model.Booking.Carer.Postcode })}", Value = Model.Booking.CarerID.ToString(), Selected = true });
+    }
+
+    var careRecipients = Enumerable.Empty<SelectListItem>().ToList();
+    if (Model.Booking.CareRecipientID > 0 && Model.Booking.CareRecipient != null)
+    {
+        careRecipients.Add(new SelectListItem() { Text = $"{Model.Booking.CareRecipient.DisplayName} [{Model.Booking.CareRecipient.ID}] {Utilities.FormatAddress(false, new string[] { Model.Booking.CareRecipient.AddressLine1, Model.Booking.CareRecipient.Postcode })}", Value = Model.Booking.CareRecipientID.ToString(), Selected = true });
+    }
+
+    var customers = Enumerable.Empty<SelectListItem>().ToList();
+    if (Model.Booking.CustomerID > 0 && Model.Booking.Customer != null)
+    {
+        customers.Add(new SelectListItem() { Text = $"{Model.Booking.Customer.DisplayName} [{Model.Booking.Customer.ID}] {Utilities.FormatAddress(false, new string[] { Model.Booking.Customer.AddressLine1, Model.Booking.Customer.Postcode })}", Value = Model.Booking.CustomerID.ToString(), Selected = true });
+    }
+
+    var bookingReferences = Enumerable.Empty<SelectListItem>().ToList();
+    if (!String.IsNullOrWhiteSpace(Model.Booking.OriginalReference) && Model.Booking.OriginalBooking != null)
+    {
+        bookingReferences.Add(new SelectListItem() { Text = $"{Model.Booking.OriginalBooking.Reference}" + (Model.Booking.OriginalBooking.Customer == null ? "" : $" - {Model.Booking.OriginalBooking.Customer?.FormattedName}"), Value = Model.Booking.OriginalBooking.Reference, Selected = true });
+    }
+
+    var showNewCustomer = TempData.ContainsKey("ShowNewCustomerModal") && (bool)TempData["ShowNewCustomerModal"];
+    var showNewPayer = TempData.ContainsKey("ShowNewPayerModal") && (bool)TempData["ShowNewPayerModal"];
+    var showNewCareRecipient = TempData.ContainsKey("ShowNewCareRecipientModal") && (bool)TempData["ShowNewCareRecipientModal"];
+    var showNewNote = TempData.ContainsKey("ShowNewNoteModal") && (bool)TempData["ShowNewNoteModal"];
+    var showBookingPreview = TempData.ContainsKey("ShowBookingPreviewModal") && (bool)TempData["ShowBookingPreviewModal"];
+    var showStatusChange = TempData.ContainsKey("ShowStatusChangeModal") && (bool)TempData["ShowStatusChangeModal"];
+}
+<h2>@ViewBag.Title<span class="badge pull-right">@Model.Booking.BookingStatus.GetDescription()</span></h2>
+
+<h3>@ViewBag.Message</h3>
+
+<div class="dropdown">
+    <button text="Action" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+        Action <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        @if (Model.Booking.CanAmendBooking())
+        {
+            <li>
+                <a onclick="javascript:$('#btnSave').click();">
+                    <i class="fa fa-save fa-xs"></i> Save
+                </a>
+            </li>
+        }
+        @if (!Model.IsNew)
+        {
+            if (Model.IsFormFilledIn)
+            {
+                if (Model.Booking.CanPreviewBooking())
+                {
+                    <li>
+                        <a href="@Url.Action("PreviewBookingSummary", "Booking", new { id = Model.Booking.ID })">
+                            <i class="fa fa-download fa-xs"></i> Preview Booking Summary PDF
+                        </a>
+                    </li>
+                }
+                if(Model.Booking.CanCompleteBookingForCustomer())
+                { 
+                    <li>
+                        <a href="@Model.Booking.CustomerPreviewLink" target="_blank">
+                            <i class="fa fa-binoculars fa-xs"></i> Complete Booking on Behalf of Customer
+                        </a>
+                    </li>
+                }
+                if (Model.Booking.CanSendPreviewEmailToCustomer())
+                {
+                    <li>
+                        <a onclick="javascript:saveAndShowBookingPreviewEmailModal()">
+                            <i class="fa fa-envelope fa-xs"></i> Send Preview Email To Customer
+                        </a>
+                    </li>
+                }
+            }
+            if (Model.Booking.CanClone())
+            {
+                <li>
+                    <a href="@Url.Action("Clone", "Booking", new { id = Model.Booking.ID })" id="clone" data-toggle="confirmation" data-title="Are you sure you want to clone this booking?"><i class="fa fa-clone fa-xs"></i> Clone</a>
+                </li>
+            }
+        }
+    </ul>
+</div>
+
+<br />
+
+@Html.Partial("_Feedback")
+
+@Html.DisplayFor(x => headerInfo, "HeaderInfo")
+
+@if (!Model.IsFormFilledIn && Model.Booking.BookingStatus == BookingStatus.Preparing)
+{
+    <div ID="pnlError" style="padding-top:15px; padding-bottom:15px;">
+        <div class="alert alert-danger">
+            <ul>
+                @foreach (var error in Model.ValidationErrors)
+                {
+                    <li>@error</li>
+                }
+            </ul>
+
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("Edit", "Booking", FormMethod.Post, new { id = "bookingForm" }))
+{
+    @Html.HiddenFor(x => x.Booking.ID)
+    @Html.HiddenFor(x => x.NewBookingStatus)
+    @Html.CheckBoxFor(m => m.ShowNewCustomerModal, new { id = "showNewCustomer", style = "display:none" })
+    @Html.CheckBoxFor(m => m.ShowNewPayerModal, new { id = "showNewPayer", style = "display:none" })
+    @Html.CheckBoxFor(m => m.ShowNewCareRecipientModal, new { id = "showNewCareRecipient", style = "display:none" })
+    @Html.CheckBoxFor(m => m.ShowNewNoteModal, new { id = "showNewNote", style = "display:none" })
+    @Html.CheckBoxFor(m => m.ShowBookingPreviewModal, new { id = "showBookingPreview", style = "display:none" })
+    @Html.CheckBoxFor(m => m.ShowStatusChangeModal, new { id = "showStatusChangeModal", style = "display:none" })
+    <div class="container">
+        <fieldset @(Model.Booking.CanAmendBooking() ? "" : "disabled='disabled'")>
+            <div class="row">
+                <div class="panel panel-primary searchpanel" id="pnlBookingDetails">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Booking Details</h3>
+                        <span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-up"></i></span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="container">
+
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-xs-3"><label>Please Choose A Customer*:</label></div>
+                                    <div class="col-xs-6">
+                                        @Html.DropDownListFor(x => x.Booking.CustomerID, customers, new { @style = "width:100%", @class = "form-control combobox customer" })
+                                    </div>
+                                    <div class="col-xs-1">
+                                        @if (Model.Booking.CustomerID.HasValue)
+                                        {
+                                            <a class="pull-left"
+                                               tabindex="0"
+                                               role="button"
+                                               data-html="true"
+                                               data-toggle="popoverfull"
+                                               data-trigger="focus"
+                                               title="<b>Customer</b>"
+                                               data-content='@Html.DisplayFor(x=>x.Booking.Customer)'><i title="View" class="fa fa-user-circle"></i></a>
+                                        }
+                                    </div>
+                                    <div class="col-xs-2"><a href="javascript:saveAndShowNewCustomerModal()" class="btn btn-info btn-xs pull-left"><i class="fa fa-plus"></i> New</a></div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-xs-3"><label>Please Choose A Care Recipient:</label></div>
+                                    <div class="col-xs-6">
+                                        @Html.DropDownListFor(x => x.Booking.CareRecipientID, careRecipients, new { @style = "width:100%", @class = "form-control combobox careRecipient" })
+                                    </div>
+                                    <div class="col-xs-1">
+                                        @if (Model.Booking.CareRecipientID.HasValue)
+                                        {
+                                            <a class="pull-left"
+                                               tabindex="0"
+                                               role="button"
+                                               data-html="true"
+                                               data-toggle="popoverfull"
+                                               data-trigger="focus"
+                                               title="<b>Care Recipient</b>"
+                                               data-content='@Html.DisplayFor(x=>x.Booking.CareRecipient)'><i title="View" class="fa fa-user-circle"></i></a>
+                                        }
+                                    </div>
+                                    <div class="col-xs-2">
+                                        <a href="javascript:saveAndShowNewCareRecipientModal()" class="btn btn-info btn-xs pull-left"><i class="fa fa-plus"></i> New</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-xs-3"><label>Relationship between Customer &amp; Care Recipient:</label></div>
+                                    <div class="col-xs-6">
+                                        @Html.CustomEnumDropDownListFor(x => x.Booking.CustomerCareRecipientRelationship, new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-xs-3"><label>Please Choose A Payer:</label></div>
+                                    <div class="col-xs-6">
+                                        @Html.DropDownListFor(x => x.Booking.PayerID, payers, new { @style = "width:100%", @class = "form-control combobox payer" })
+                                    </div>
+                                    <div class="col-xs-1">
+                                        @if (Model.Booking.PayerID.HasValue)
+                                        {
+                                            <a class="pull-left"
+                                               tabindex="0"
+                                               role="button"
+                                               data-html="true"
+                                               data-toggle="popoverfull"
+                                               data-trigger="focus"
+                                               title="<b>Payer</b>"
+                                               data-content='@Html.DisplayFor(x=>x.Booking.Payer)'><i title="View" class="fa fa-user-circle"></i></a>
+                                        }
+                                    </div>
+                                    <div class="col-xs-2"><a href="javascript:saveAndShowNewPayerModal()" class="btn btn-info btn-xs pull-left"><i class="fa fa-plus"></i> New</a></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-xs-3"></div>
+                                    <div class="col-xs-6 col-md-4">@Html.CheckBoxFor(x => x.Booking.LockPayer) Lock Payer?</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-xs-3"><label>Please Choose A Carer*:</label></div>
+                                    <div class="col-xs-6">
+                                        @Html.DropDownListFor(x => x.Booking.CarerID, carers, new { @style = "width:100%", @class = "form-control combobox carer" })
+                                    </div>
+                                    <div class="col-xs-1">
+                                        @if (Model.Booking.CarerID.HasValue)
+                                        {
+                                            <a class="pull-left"
+                                               tabindex="0"
+                                               role="button"
+                                               data-html="true"
+                                               data-toggle="popoverfull"
+                                               data-trigger="focus"
+                                               title="<b>Carer</b>"
+                                               data-content='@Html.DisplayFor(x=>x.Booking.Carer)'><i title="View" class="fa fa-user-circle"></i></a>
+                                        }
+                                    </div>
+                                    <div class="col-xs-2"></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-xs-3"><label>Original Booking Reference:</label></div>
+                                    <div class="col-xs-6 col-md-4">
+                                        @Html.DropDownListFor(x => x.Booking.OriginalReference, bookingReferences, new { @style = "width:100%", @class = "form-control combobox bookingReference" })
+                                    </div>
+                                    @if (!String.IsNullOrWhiteSpace(Model.Booking.OriginalReference) && (Model.Booking.OriginalBooking != null))
+                                    {
+                                        <div class="col-xs-1">
+                                            <a href="javascript:void(0);" onclick="showBookingViewModal(@Model.Booking.OriginalBooking.ID);"><i title="View" class="fa fa-question-circle"></i></a>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-xs-3"><label>Please Choose A Payment Method:</label></div>
+                                    <div class="col-xs-6 col-md-4">@Html.CustomEnumDropDownListFor(x => x.Booking.PaymentMethod, new { @class = "form-control" })</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-xs-3"><label>Booking Type:</label></div>
+                                    <div class="col-xs-6 col-md-4">@Html.CustomEnumDropDownListFor(x => x.Booking.CareType, new { @class = "form-control" })</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-xs-3"><label>Payer Reference:</label></div>
+                                    <div class="col-xs-6 col-md-4">
+                                        @Html.TextBoxFor(x => x.Booking.Payer_Ref_No, new { @class = "form-control", placeholder = "Payer Reference" })
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-xs-3"><label>Booking Summary:</label><br /><a id="btnSummaryWording" title="Insert Standard Wording"><i class="fa fa-keyboard"></i></a></div>
+                                    <div class="col-xs-9">@Html.TextAreaFor(x => x.Booking.Summary, new { @class = "form-control", maxlength = "1000" })</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="panel panel-primary searchpanel" id="pnlRatesAndExpenses">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Rates &amp; Expenses</h3>
+                        <span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-up"></i></span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="container">
+
+                            <div id="ratePlaceholder">
+                            </div>
+                            @{ var displayExpenses = (Model.Booking.EstimatedExpenses.HasValue && Model.Booking.EstimatedExpenses.Value > 0);}
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-xs-3">@Html.CheckBox("expensesRequired", displayExpenses) <label>Expenses Will Be Required</label></div>
+                                    <div class="col-xs-2 expenses" style="@(displayExpenses ? "" : "display:none;")">
+                                        <label>Value Of Expenses Per Week</label>
+                                    </div>
+                                    <div class="col-xs-7 expenses" style="@(displayExpenses ? "" : "display:none;")"><label>Notes</label></div>
+                                </div>
+                            </div>
+
+                            <div class="row expenses" style="@(displayExpenses ? "" : "display:none;")">
+                                <div class="form-group">
+                                    <div class="col-xs-3"></div>
+                                    <div class="col-xs-2">
+                                        <div class="input-group">
+                                            <span class="input-group-addon">£</span>
+                                            @{var formattedExpenses = Model.Booking.EstimatedExpenses == 0 ? "" : String.Format("{0:0.00}", Model.Booking.EstimatedExpenses); }
+                                            @Html.TextBoxFor(x => x.Booking.EstimatedExpenses, new { @class = "form-control currency", placeholder = "0.00", type = "number", min = "0", step = "0.01", @Value = formattedExpenses })
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-7">@Html.TextAreaFor(x => x.Booking.ExpensesNotes, new { @class = "form-control", maxlength = "1000" })</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <hr />
+                                <div class="form-group">
+                                    <div class="col-xs-3"><p style="font-size:1.5em">Booking Total:</p></div>
+                                    <div class="col-xs-9">
+                                        <div class="input-group">
+                                            <span class="input-group-addon">£</span>
+                                            @{var formattedTotal = Model.Booking.Total == 0 ? "" : String.Format("{0:0.00}", Model.Booking.Total); }
+                                            @Html.TextBoxFor(x => x.Booking.Total, new { @class = "form-control currency", placeholder = "0.00", type = "number", min = "0", step = "0.01", @Value = formattedTotal })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="panel panel-primary searchpanel" id="pnlWorkingHours">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Indicative Working Hours</h3>
+                        <span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-up"></i></span>
+                    </div>
+                    <div class="panel-body">
+                        @Html.Partial("_WorkingHours", Model.CarerAvailability)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="panel panel-primary searchpanel" id="pnlIndicativeServices">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Indicative Services</h3>
+                        <span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-up"></i></span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            General Home Help &amp; Companionship: @Html.CheckBoxFor(x => x.Services.HomeHelp)<br />
+                            Personal Care &amp; Hygiene: @Html.CheckBoxFor(x => x.Services.Personal)<br />
+                            Food Preparation &amp; Shopping: @Html.CheckBoxFor(x => x.Services.Food)<br />
+                            Dementia Support: @Html.CheckBoxFor(x => x.Services.Dementia)<br />
+                            Gardening &amp; House Maintenance: @Html.CheckBoxFor(x => x.Services.Gardening)<br />
+                            Transportation &amp; Errands: @Html.CheckBoxFor(x => x.Services.Transport)<br />
+                            Paperwork &amp; Administration: @Html.CheckBoxFor(x => x.Services.Admin)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="panel panel-primary searchpanel" id="pnlAdditionalDetails">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Additional Booking Details</h3>
+                        <span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-up"></i></span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="container">
+
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-xs-3"><label>Special Contractual Requirements:</label><br /><a id="btnContractualRequirementsWording" title="Insert Standard Wording"><i class="fa fa-keyboard"></i></a></div>
+                                    <div class="col-xs-9">@Html.TextAreaFor(x => x.Booking.ContractualRequirements, new { @class = "form-control", maxlength = "1000" })</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-xs-3"><label>Notes:</label></div>
+                                    <div class="col-xs-9">@Html.TextAreaFor(x => x.Booking.Note, new { @class = "form-control", maxlength = "1000" })</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-xs-3"><label>Promotional Code:</label></div>
+                                    <div class="col-xs-6 col-md-4">
+                                        @Html.TextBoxFor(x => x.Booking.PromotionalCode, new { @class = "form-control", placeholder = "Promotional Code" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-xs-3"><label>CC Email Address:</label></div>
+                                    <div class="col-xs-6 col-md-4">
+                                        @Html.TextBoxFor(x => x.Booking.CCEmail1, new { @class = "form-control", placeholder = "CC Email Address", type = "email" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-xs-3"><label>CC Email Address:</label></div>
+                                    <div class="col-xs-6 col-md-4">
+                                        @Html.TextBoxFor(x => x.Booking.CCEmail2, new { @class = "form-control", placeholder = "CC Email Address", type = "email" })
+                                    </div>
+                                </div>
+                            </div>
+                            @if (Model.Booking.PaymentMethod == PaymentMethod.DirectDebit || Model.Booking.PaymentMethod == PaymentMethod.GoCardless)
+                            {
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-xs-3"><label>DD Mandate Number:</label></div>
+                                    <div class="col-xs-6 col-md-4">
+                                        @Html.TextBoxFor(x => x.Booking.DDMandateNumber, new { @class = "form-control", placeholder = "Mandate Number"})
+                                    </div>
+                                </div>
+                            </div>
+                            }
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-xs-12">@Html.CheckBoxFor(x => x.Booking.AgreedByCustomer, new { onclick = "return false;" }) <label>Customer Has Agreed To Terms &amp; Conditions</label></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="row">
+            <div class="panel panel-primary searchpanel" id="pnlNotes">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Notes</h3>
+                    <span class="pull-right clickable panel-collapsed"><i class="glyphicon glyphicon-chevron-down"></i></span>
+                </div>
+                <div class="panel-body" style="display:none; overflow-y: initial !important">
+                    <div style="max-height: 300px;overflow-y: auto;">
+                        <div style="padding-top:15px; padding-bottom:15px;">
+                            @Html.DisplayFor(x => Model.Booking.Notes)
+                        </div>
+                    </div>
+                    <div class="row pull-right">
+                        <div class="col-xs-12">
+                            <a href="javascript:saveAndShowNewNoteModal()" class="btn btn-info btn-xs pull-left"><i class="fa fa-plus"></i> New</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (!Model.IsNew && Model.Booking.BookingStatusHistory.Any())
+        {
+            <div class="row">
+                <div class="panel panel-primary searchpanel" id="pnlStatusHistory">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Status History</h3>
+                        <span class="pull-right clickable panel-collapsed"><i class="glyphicon glyphicon-chevron-down"></i></span>
+                    </div>
+                    <div class="panel-body" style="display:none; overflow-y: initial !important">
+                        <div style="max-height: 300px;overflow-y: auto;">
+                            <div style="padding-top:15px; padding-bottom:15px;">
+                                @Html.Partial("_BookingStatusHistory", Model.Booking.BookingStatusHistory)
+                            </div>
+                        </div>
+                        <div class="row pull-right">
+                            <div class="col-xs-12">
+                                <div class="dropdown">
+                                    <button text="Action" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+                                        Change Status <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        @if (!Model.IsNew)
+                                        {
+                                            if (Model.Booking.CanSetStatusTo(BookingStatus.Cancelled))
+                                            {
+                                                <li>
+                                                    <a href="javascript:saveAndShowBookingStatusModal(@Model.Booking.ID, @((int)BookingStatus.Cancelled))" id="cancel" data-toggle="confirmation" data-title="Are you sure you want to cancel this booking?"><i class="fa fa-trash-alt fa-xs"></i> Cancel</a>
+                                                </li>
+                                            }
+                                            if (Model.Booking.CanSetStatusTo(BookingStatus.OnHold))
+                                            {
+                                                <li>
+                                                    <a href="javascript:saveAndShowBookingStatusModal(@Model.Booking.ID, @((int)BookingStatus.OnHold))"><i class="fa fa-exclamation-triangle fa-xs"></i> Put On Hold</a>
+                                                </li>
+                                            }
+                                            if (Model.Booking.CanSetStatusTo(BookingStatus.Closed))
+                                            {
+                                                <li>
+                                                    <a href="javascript:saveAndShowBookingStatusModal(@Model.Booking.ID, @((int)BookingStatus.Closed))" id="close" data-toggle="confirmation" data-title="Are you sure you want to close this booking?"><i class="fa fa-times fa-xs"></i> Close</a>
+                                                </li>
+                                            }
+                                            if (Model.Booking.CanSetStatusTo(BookingStatus.Live))
+                                            {
+                                                <li>
+                                                    <a href="javascript:saveAndShowBookingStatusModal(@Model.Booking.ID, @((int)BookingStatus.Live))"><i class="fa fa-play-circle fa-xs"></i> Set To Live</a>
+                                                </li>
+                                            }
+                                        }
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+
+        @if (!Model.IsNew && Model.Booking.Timesheets.Any())
+        {
+            <div class="row">
+                <div class="panel panel-primary searchpanel" id="pnlTimesheetHistory">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Timesheet History</h3>
+                        <span class="pull-right clickable panel-collapsed"><i class="glyphicon glyphicon-chevron-down"></i></span>
+                    </div>
+                    <div class="panel-body" style="display:none; overflow-y: initial !important">
+                        <div style="max-height: 300px;overflow-y: auto;">
+                            <div style="padding-top:15px; padding-bottom:15px;">
+                                @Html.Partial("_TimesheetHistory", Model.Booking.Timesheets)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="row pull-right" style="@(Model.Booking.CanAmendBooking()?"":"display:none;")">
+            <button id="btnSave" formnovalidate="formnovalidate" type="submit" class="btn btn-info"><i class="fa fa-save fa-md"></i> Save</button>
+            @if (Model.Booking.CanSendPreviewEmailToCustomer())
+            {
+                <a onclick="javascript:saveAndShowBookingPreviewEmailModal()" class="btn btn-info">
+                    <i class="fa fa-envelope fa-xs"></i> Send Preview Email To Customer
+                </a>
+            }
+        </div>
+    </div>
+                                                }
+
+<div id="modalPlaceholder" />
+
+@section Scripts {
+    @Scripts.Render("~/bundles/ckeditor")
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        var readonly =  @((!Model.Booking.CanAmendBooking()).ToString().ToLower());
+        var showCompactView = @Model.CompactView.ToString().ToLower();
+
+        $(document).ready(function () {
+
+            $('.nullable-checkbox').checkbox();
+
+            $("#@Html.IdFor(x => x.Booking.CareType)").change(function (e) {
+                var bookingType = this.value;
+
+                switch (parseInt(bookingType)) {
+                    case 2:
+                        viewName = "_LiveIn";
+                        if(!$("#@Html.IdFor(x => x.Booking.ContractualRequirements)").val())
+                        {
+                            $("#@Html.IdFor(x => x.Booking.ContractualRequirements)").val("This live-in assignment is at the agreed weekly rate. Specific Requirements, ground rules, time off etc to be agreed during first week of assignment. Assignment is subject to 14 days notice.")
+                        }
+                        break;
+                    case 3:
+                        viewName = "_OvernightSpecials";
+                        if(!$("#@Html.IdFor(x => x.Booking.ContractualRequirements)").val())
+                        {
+                            $("#@Html.IdFor(x => x.Booking.ContractualRequirements)").val("This overnight assignment is for the hours of 10pm to 7am each night at the agreed overnight rate (unless different hours are specifically agreed)")
+                        }
+                        break;
+                    default:
+                        viewName = "_Hourly";
+                }
+                @if (Model.IsNew) {
+                    <text>
+                $("#ratePlaceholder").load("/Booking/GetBookingPartialView",
+                    { viewName: viewName });
+                </text>
+                } else {
+                    <text>
+                var bookingID = @Model.Booking.ID;
+                $("#ratePlaceholder").load("/Booking/GetBookingPartialView",
+                    { bookingID: bookingID, viewName: viewName });
+                </text>
+                }
+            });
+
+            $(".bookingReference").select2({
+                ajax: {
+                    url: '/Booking/SearchBookingsJSON/',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            search: params.term
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: $.map(data.items, function (obj) {
+                                return { id: obj.ID, text: obj.Value };
+                            })
+                        };
+                    },
+                    cache: true
+                },
+                placeholder: 'Search for Booking Reference',
+                allowClear: true,
+                escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+                minimumInputLength: 1,
+                //templateResult: formatRepo,
+                //templateSelection: formatRepoSelection
+            });
+
+            $(".customer").select2({
+                ajax: {
+                    url: '/User/SearchUsersJSON/',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            search: params.term
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: $.map(data.items, function (obj) {
+                                return { id: obj.ID, text: obj.Value };
+                            })
+                        };
+                    },
+                    cache: true
+                },
+                placeholder: 'Search for Customer',
+                allowClear: true,
+                escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+                minimumInputLength: 1,
+                //templateResult: formatRepo,
+                //templateSelection: formatRepoSelection
+            });
+
+            $(".payer").select2({
+                ajax: {
+                    url: '/User/SearchUsersJSON/',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            search: params.term
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: $.map(data.items, function (obj) {
+                                return { id: obj.ID, text: obj.Value };
+                            })
+                        };
+                    },
+                    cache: true
+                },
+                placeholder: 'Search for Payer',
+                allowClear: true,
+                escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+                minimumInputLength: 1,
+                //templateResult: formatRepo,
+                //templateSelection: formatRepoSelection
+            });
+
+            $(".carer").select2({
+                ajax: {
+                    url: '/Carer/SearchCarersJSON/',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            search: params.term
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: $.map(data.items, function (obj) {
+                                return { id: obj.ID, text: obj.Value };
+                            })
+                        };
+                    },
+                    cache: true
+                },
+                placeholder: 'Search for Carer',
+                allowClear: true,
+                escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+                minimumInputLength: 1,
+                //templateResult: formatRepo,
+                //templateSelection: formatRepoSelection
+            });
+
+            $(document.body).on("change",".carer",function(){
+                var carerid = this.value;
+                updateCarerDefaults(carerid);
+            });
+
+            $(".careRecipient").select2({
+                ajax: {
+                    url: '/User/SearchUsersJSON/',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            search: params.term
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: $.map(data.items, function (obj) {
+                                return { id: obj.ID, text: obj.Value };
+                            })
+                        };
+                    },
+                    cache: true
+                },
+                placeholder: 'Search for Care Recipient',
+                allowClear: true,
+                escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+                minimumInputLength: 1,
+                //templateResult: formatRepo,
+                //templateSelection: formatRepoSelection
+            });
+
+            $("#expensesRequired").change(function (e) {
+                var required = this.checked;
+                if (!required) {
+                    $(".expenses").hide();
+                } else {
+                    $(".expenses").show();
+                }
+            });
+
+            $("#@Html.IdFor(x => x.Booking.EstimatedExpenses)").change(function (e) {
+                updateBookingTotal();
+            });
+
+            $(document).on('click', '.panel-heading span.clickable', function (e) {
+                var $this = $(this);
+                if (!$this.hasClass('panel-collapsed')) {
+                    showBookingPanel($this, false);
+                } else {
+                    showBookingPanel($this, true);
+                }
+            })
+
+            @if (TempData["SetFocus"] != null)
+            {
+                <text>
+            var panel = $('#@TempData["SetFocus"]');
+            setFocusToBookingPanel(panel);
+            </text>
+            }
+
+            $("#@Html.IdFor(x=>x.Booking.CareType)").change();
+
+
+            @if (showNewCustomer)
+            {
+                <text>
+            showNewUserModal(@Model.Booking.ID, @((int)UserType.Customer), 'Create New Customer');
+            </text>
+            }
+            else if (showNewPayer)
+            {
+                <text>
+            showNewUserModal(@Model.Booking.ID, @((int)UserType.Payer), 'Create New Payer');
+            </text>
+            }
+            else if (showNewCareRecipient)
+            {
+                <text>
+            showNewUserModal(@Model.Booking.ID, @((int)UserType.CareRecipient),'Create New Care Recipient');
+            </text>
+            }
+            else if (showNewNote)
+            {
+                <text>
+            showBookingNoteModal(@Model.Booking.ID);
+            </text>
+            }
+            else if (showBookingPreview)
+            {
+                <text>
+            showBookingPreviewEmailModal(@Model.Booking.ID);
+            </text>
+            }
+            else if (showStatusChange)
+            {
+                <text>
+            showChangeStatusModal(@Model.Booking.ID, @((int)Model.NewBookingStatus));
+            </text>
+                }
+
+            if(readonly)
+            {
+                $(".carer").attr("readonly", "readonly");
+                $(".payer").attr("readonly", "readonly");
+                $(".careRecipient").attr("readonly", "readonly");
+                $(".customer").attr("readonly", "readonly");
+                $(".bookingReference").attr("readonly", "readonly");
+            }
+
+            if(showCompactView)
+            {
+                var pnlNotes = $('#pnlNotes');
+                var pnlStatus = $('#pnlStatusHistory');
+
+                $(".panel-heading span.clickable").each(function () {
+                    var panelId =  $(this).closest('.searchpanel').attr('id');
+                    if(panelId == pnlNotes.attr('id') || panelId == pnlStatus.attr('id'))
+                    {
+                        showBookingPanel($(this), true);
+                    }
+                    else
+                    {
+                        if (!$(this).hasClass('panel-collapsed')) {
+                            showBookingPanel($(this), false);
+                        }
+                    }
+                });
+
+                if(pnlStatus)
+                    setFocusToBookingPanel(pnlStatus);
+            }
+
+        });
+
+        function setFocusToBookingPanel(panel)
+        {
+            showBookingPanel(panel.find(".panel-heading span.clickable"), true);
+            var divPosition = panel.offset();
+            $('html, body').animate({ scrollTop: divPosition.top}, "slow");
+        }
+
+        function updateCarerDefaults(carerid)
+        {
+            var hourlyRateField = $("#@Html.IdFor(x => x.Booking.HourlyRate)");
+
+            if(carerid && (!hourlyRateField.val() || ($('#weeklyRate').is(':visible') && parseFloat($('#weeklyRate').val()) <=0)))
+            {
+                $.ajax({
+                    type: 'GET',
+                    url: '/booking/GetBookingDefaults/?carerid=' + carerid
+                }).then(function (data) {
+                    if(data.success)
+                    {
+                        if(hourlyRateField.is(':visible'))
+                        {
+                            var hourlyRate = parseFloat(data.result.HourlyRate).toFixed(2);
+                            if(hourlyRate>0)
+                            {
+                                hourlyRateField.val(hourlyRate);
+                            }
+                        }
+                        else
+                        {
+                            var weeklyRate = parseFloat(data.result.WeeklyRate).toFixed(2);
+                            if(weeklyRate>0)
+                            {
+                                $('#weeklyRate').val(weeklyRate).change();
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function updateBookingTotal() {
+            var rateTotal = parseFloat($("#ratetotal").html().replace("£", ""));
+            if (isNaN(rateTotal)) rateTotal = 0;
+
+            var expensesTotal = parseFloat($("#@Html.IdFor(x => x.Booking.EstimatedExpenses)").val());
+            if (isNaN(expensesTotal)) expensesTotal = 0;
+
+            var bookingTotal = rateTotal + expensesTotal;
+            if (isNaN(bookingTotal)) bookingTotal = 0;
+
+            $("#@Html.IdFor(x=>x.Booking.Total)").val(bookingTotal.toFixed(2));
+        }
+
+        $("#btnSummaryWording").click(function() {
+            showStandardWordingModal('Booking Summary', $("#@Html.IdFor(x => x.Booking.Summary)"));
+        });
+        $("#btnContractualRequirementsWording").click(function() {
+            showStandardWordingModal('Contractual Requirements', $("#@Html.IdFor(x => x.Booking.ContractualRequirements)"));
+        });
+    </script>
+}

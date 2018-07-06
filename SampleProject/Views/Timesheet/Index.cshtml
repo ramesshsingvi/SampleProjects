@@ -1,0 +1,82 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model List<TimesheetWeek>
+
+@{
+    ViewBag.Title = "Timesheets";
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+<div class="dropdown">
+    <button text="Action" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+        Action <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+            <li>
+                <a onclick="javascript:showNewTimesheetModal()">
+                    <i class="fa fa-plus"></i> New Timesheet
+                </a>
+            </li>
+    </ul>
+</div>
+
+@Html.Partial("_Feedback")
+
+@Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(x => x.Reference).Titled("Timesheet Ref").Sortable(true).Filterable(true);
+    columns.Add(x => x.Agreement.CareRecipientOrCustomer).Titled("Care Recipient/Customer").Sortable(true).Filterable(true);
+    columns.Add(x => x.Carer.FormattedName).Titled("Carer").RenderValueAs(x => CarerColumn(x.Carer)).Encoded(false).Sanitized(false).Filterable(true).Sortable(true);
+    columns.Add(x => x.WeekEnding).RenderValueAs(x => x.WeekEnding.ToShortDateString()).Titled("Week Ending").Sortable(true).Filterable(true);
+    columns.Add(x => x.HoursWorked).RenderValueAs(x => (x.HoursWorked * 60).ConvertMinutesToHHMMString()).Titled("Hours Worked").Sortable(true).Filterable(true);
+    columns.Add(x => x.Expenses, "Expenses").RenderValueAs(x => x.Expenses.Where(y=>y.Type == ExpenseType.Other).Sum(y=>y.AmountClaimed).ToMoney()).Titled("Other Expenses").Sortable(false).Filterable(false);
+    columns.Add(x => x.Expenses, "Mileage").RenderValueAs(x => x.Expenses.Where(y => y.Type == ExpenseType.Mileage).Sum(y => Convert.ToDecimal(y.ExtraInfo)).ToString()).Titled("Mileage").Sortable(false).Filterable(false);
+    columns.Add(x => x.Status).RenderValueAs(x => "<div class=\"badge\">" + x.Status.GetDescription() + "</div>").Encoded(false).Sanitized(false).Titled("Status").Sortable(true).Filterable(true);
+    columns.Add(x => x.HoldFromCustomerInvoice).RenderValueAs(x => x.HoldFromCustomerInvoice ? ("<i title='Held From Customer Invoice' style='color:red' class='fa fa-exclamation-triangle'></i>") : "").Encoded(false).Sanitized(false).Titled("").Sortable(true);
+    columns.Add(x => x.ID, "Action Column").RenderValueAs(x => CustomMenuColumn(x)).Encoded(false).Sanitized(false).Titled("Action");
+}).WithPaging(20).WithMultipleFilters()
+
+<div id="modalPlaceholder" />
+
+@helper CarerColumn(Carer carer)
+{
+    <a href="@Url.Action("Details", "Carer", new { id = carer.ID})">@carer.FormattedName</a>
+}
+
+@helper CustomMenuColumn(TimesheetWeek timesheetWeek)
+{
+    <text>
+        <div class="dropdown">
+            <button text="Action" class="btn btn-info dropdown-toggle btn-xs" data-toggle="dropdown">
+                Action <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li>
+                    <a href="@Url.Action("Edit", "Timesheet", new { id = timesheetWeek.ID })"><i class="fa fa-clock"></i> View/Edit</a>
+                </li>
+                <li>
+                    <a href="@Url.Action("EditByReference", "Booking", new { reference = timesheetWeek.AgreementID })"><i class="fa fa-eye"></i> View Booking</a>
+</li>
+                @if (!timesheetWeek.HoldFromCustomerInvoice)
+                {
+                <li>
+                    <a href="@Url.Action("HoldFromCustomerInvoice", "Timesheet", new { id = timesheetWeek.ID })" id="holdback" data-toggle="confirmation" data-title="Are you sure you want to hold back the timesheet?"><i class="fa fa-exclamation-triangle"></i> Hold From Customer Invoice</a>
+                </li>
+                }
+                else
+                {
+                    <li>
+                        <a href="@Url.Action("HoldFromCustomerInvoice", "Timesheet", new { id = timesheetWeek.ID, hold = false })"><i class="fa fa-exclamation-triangle"></i> End Hold From Customer Invoice</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </text>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/timesheet")
+}

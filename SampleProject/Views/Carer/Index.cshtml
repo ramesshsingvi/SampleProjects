@@ -1,0 +1,50 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model Dictionary<User, List<Booking>>
+
+@{
+    ViewBag.Title = "Carers";
+    var headerInfo = ViewBag.HeaderInfo;
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+@Html.Partial("_Feedback")
+
+@Html.DisplayFor(x => headerInfo, "HeaderInfo")
+
+@Html.Grid(Model.Keys).Columns(columns =>
+{
+    columns.Add(x => x.ID).Titled("Carer ID").RenderValueAs(x => x.ID.ToString()).Filterable(true).Sortable(true);
+    columns.Add(x => x.FormattedName).Titled("Name").RenderValueAs(x => x.ToString()).Filterable(true).Sortable(true);
+    columns.Add(x => x.PaymentSummary.AmountOutstanding).Titled("Amount Outstanding").RenderValueAs(x => x.PaymentSummary.AmountOutstanding.ToMoney()).Filterable(true).Sortable(true);
+    columns.Add(x => x.PaymentSummary.PaymentsToDate).Titled("Payments To Date").RenderValueAs(x => x.PaymentSummary.PaymentsToDate.ToMoney()).Filterable(true).Sortable(true);
+    columns.Add(x => x.ID, "Action Column").RenderValueAs(x => CustomMenuColumn(x)).Encoded(false).Sanitized(false).Titled("Action");
+}).WithPaging(20)
+
+<div id="modalPlaceholder" />
+
+@helper CustomMenuColumn(User user)
+{
+    <text>
+        <div class="dropdown">
+            <button text="Action" class="btn btn-info dropdown-toggle btn-xs" data-toggle="dropdown">
+                Action <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li>
+                    <a href="@Url.Action("Index", "CarerStatement", new { id = user.ID})">View Statements</a>
+                </li>
+                <li>
+                    <a href="@Url.Action("PaymentHistory", "CarerPayment", new { id = user.ID})">View Payment History</a>
+                </li>
+            </ul>
+        </div>
+    </text>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,51 @@
+﻿@using System.Collections.Generic;
+@using TrustonTap.Common;
+
+@model Dictionary<string, string>
+
+@if (Model != null)
+{
+    <div style="padding-top:5px;">
+        <div class="panel panel-default" style="background-color:#FEF9E7">
+            <div class="panel-body">
+                <div class="container">
+                    <table width="100%">
+                        @{ var counter = 0; var tagOpened = false; }
+                        @foreach (var key in Model.Keys.Where(x=> !Model[x].IsNullOrFormattingText()))
+                        {
+                            if (counter % 3 == 0)
+                            {
+                                if (tagOpened)
+                                {
+                                            @Html.Raw("</tr>");
+                                }
+                                @Html.Raw("<tr>");
+                                tagOpened = true;
+                            }
+                            @RenderColumn(key, Model[key]);
+                            counter++;
+                        }
+                        @if (tagOpened)
+                        {
+                            @Html.Raw("</tr>");
+                        }
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+                            }
+
+@helper RenderColumn(string key, string value)
+{
+    if (value == "&nbsp;")
+    {
+            <td colspan="2"><label>@Html.Raw(key)</label></td>
+    }
+    else if (!value.IsNullOrFormattingText())
+    {
+            <td style="white-space:nowrap; width:1px; vertical-align:top;"><label>@Html.Raw(key):</label></td>
+            <td style="text-align:left;vertical-align:top;">@Html.Raw(value)</td>
+    }
+}

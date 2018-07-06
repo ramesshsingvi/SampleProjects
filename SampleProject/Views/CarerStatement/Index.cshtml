@@ -1,0 +1,49 @@
+﻿@using TrustonTap.Web;
+@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model List<CarerStatement>
+
+@{
+    Carer carer = ViewBag.Carer;
+    if (carer != null)
+    {
+        ViewBag.Title = "Carer Statements For " + carer.FormattedName;
+    }
+    else
+    {
+        ViewBag.Title = "Carer Statements";
+    }
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+@Html.Partial("_Feedback")
+
+@Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(x => x.Reference).Titled("Reference").Sortable(true);
+    columns.Add(x => x.Carer.FormattedName).Titled("Carer").Sortable(true);
+    columns.Add(x => x.CreatedDate).RenderValueAs(x => x.CreatedDate.ToShortDateString()).Titled("Invoice Date").Sortable(true);
+    columns.Add(x => x.Total).Titled("Total").RenderValueAs(x => x.Total.ToMoney()).Sortable(true);
+    columns.Add(x => x.AmountOutstanding).Titled("Amount Outstanding").RenderValueAs(x => x.AmountOutstanding.ToMoney()).Sortable(true);
+    columns.Add(x => x.Status).RenderValueAs(x => "<div class=\"badge\">" + x.Status.GetDescription() + "</div>").Encoded(false).Sanitized(false).Titled("Status").Sortable(true);
+    columns.Add(x => x.ID, "Action Column").RenderValueAs(x => CustomMenuColumn(x)).Encoded(false).Sanitized(false).Titled("Action");
+}).WithPaging(20)
+
+@helper CustomMenuColumn(CarerStatement carerStatement)
+{
+    <text>
+        <div class="dropdown">
+            <button text="Action" class="btn btn-info dropdown-toggle btn-xs" data-toggle="dropdown">
+                Action <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li>
+                    <a href="@Url.Action("StatementDetails", "CarerStatement", new { Id = carerStatement.ID})"><i class="fa fa-eye"></i> View</a>
+                </li>
+            </ul>
+        </div>
+    </text>
+}

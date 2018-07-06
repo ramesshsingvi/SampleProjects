@@ -1,0 +1,42 @@
+﻿@using TrustonTap.Common.Models
+@using TrustonTap.Common
+@using TrustonTap.Web.ViewModels
+
+@model ExpenseViewModel
+
+@using (Html.BeginCollectionItem("expenses"))
+{
+    @Html.HiddenFor(x => x.ID)
+    @Html.HiddenFor(x => x.ExpenseDate)
+    @Html.HiddenFor(x => x.ExpenseTypeID)
+    @Html.HiddenFor(x => x.AgreementID)
+    @Html.HiddenFor(x => x.CarerID)
+    @Html.HiddenFor(x => x.TimesheetID)
+
+
+    switch (Model.Type)
+    {
+        case ExpenseType.Other:
+            <td class="expense">
+                <div class="input-group">
+                    <span class="input-group-addon">£</span>
+                    @{var formattedCurrency = Model.AmountClaimed == 0 ? "" : String.Format("{0:0.00}", Model.AmountClaimed); }
+    @Html.TextBoxFor(x => x.AmountClaimed, new { @class = "form-control currency", type = "number", min = "0", step = "0.01", @Value = formattedCurrency })
+                </div>
+            </td>
+         break;
+         case ExpenseType.Mileage:
+
+                            <td class="mileage">
+                                <div class="input-group">
+                                    @{var formattedMiles = Model.Miles == 0 ? "" : String.Format("{0:0.0}", Model.Miles); }
+                                    @Html.TextBoxFor(x => x.Miles, new { @class = "form-control", type = "number", min = "0", step = "0.1", @Value = formattedMiles })
+                                    <span class="input-group-addon">M</span>
+                                </div>
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(x => x.Notes, new { @class = "form-control notes", @Value= ViewData["Notes"]?.ToString() })
+                            </td>
+         break;
+         }
+}

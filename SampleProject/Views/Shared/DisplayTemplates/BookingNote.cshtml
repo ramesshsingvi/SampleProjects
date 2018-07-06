@@ -1,0 +1,2 @@
+﻿@model TrustonTap.Common.Models.BookingNote
+<div class="panel panel-default bookingnote" style="background-color:#FEF9E7;padding:5px"><strong>@Model.CreatedByUser [@Html.ValueFor(model => model.CreatedDate, "{0:dd/MM/yyyy HH:mm}")]: </strong>@Html.Raw(Model.Note)</div>

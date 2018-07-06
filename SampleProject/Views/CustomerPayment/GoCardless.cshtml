@@ -1,0 +1,93 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model List<CustomerStatement>
+
+@{
+    ViewBag.Title = "Outstanding GoCardless Customer Payments";
+    var headerInfo = ViewBag.HeaderInfo;
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+<div class="dropdown">
+    <button text="Action" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+        Action <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        <li id="takePaymentMenuItem" style="display:none">
+            <a onclick="showTakePaymentGoCardlessModal()"><i class="fa fa-money-bill-alt"></i> Take Payment</a>
+        </li>
+        <li id="exportPaymentMenuItem" style="display:none">
+            <a onclick="exportPaymentsGoCardless()"><i class="fa fa-external-link-alt"></i> Export Payments</a>
+        </li>
+    </ul>
+</div>
+
+@Html.Partial("_Feedback")
+
+@Html.DisplayFor(x => headerInfo, "HeaderInfo")
+
+@Html.Grid(Model).SetRowCssClasses(e => e.Status == CustomerStatementStatus.FailedPayment ? "failed" : string.Empty).Columns(columns =>
+{
+    columns.Add(x => x.ID, "Select").Titled("<input name=\"allChk\" type=\"checkbox\" id=\"cbSelectAll\" />").SetWidth(30).RenderValueAs(x => CheckboxColumn(x)).Encoded(false).Sanitized(false).Filterable(false).Sortable(false);
+    columns.Add(x => x.Reference).Titled("Statement Reference").RenderValueAs(x => ReferenceColumn(x)).Encoded(false).Sanitized(false).Filterable(true).Sortable(true);
+    columns.Add(x => x.StatementDate).Titled("Statement Date").RenderValueAs(x => x.StatementDate.ToShortDateString()).Filterable(true).Sortable(true);
+    columns.Add(x => x.Booking.Payer.DisplayName).RenderValueAs(x => PayerColumn(x)).Encoded(false).Sanitized(false).Titled("Customer/Payer").Filterable(true).Sortable(true);
+    columns.Add(x => x.AmountOutstanding).Titled("Amount Outstanding").RenderValueAs(x => x.AmountOutstanding.ToMoney()).Filterable(true).Sortable(true);
+})
+
+<div id="modalPlaceholder" />
+
+@helper PayerColumn(CustomerStatement customerStatement)
+{
+    if (customerStatement.Booking.PayerID == customerStatement.Booking.CustomerID)
+    {
+        <a href="@Url.Action("Details", "Customer", new { id = @customerStatement.Booking.CustomerID })">@customerStatement.Booking.Customer.DisplayName</a>
+    }
+    else
+    {
+        <a href="@Url.Action("Details", "Payer", new { id = @customerStatement.Booking.PayerID })">@customerStatement.Booking.Payer.DisplayName</a>
+    }
+}
+
+@helper CheckboxColumn(CustomerStatement statement)
+{
+    <text>
+        <input type="checkbox" data-amount="@statement.AmountOutstanding" class="toggleable" value="@statement.ID" />
+    </text>
+}
+
+@helper ReferenceColumn(CustomerStatement statement)
+{
+        <a href="@Url.Action("InvoiceDetails", "CustomerInvoice", new { id = statement.ID.ToString() })"><span @(statement.Status == CustomerStatementStatus.FailedPayment ? "style=\"color:red\"" : "")>@statement.Reference</span></a>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        $("#cbSelectAll").change(function () {
+            toggleAllCheckboxes()
+        });
+
+            $("input:checkbox").change(function () {
+                var total = 0
+                $("input:checkbox:checked.toggleable").each(function () {
+                    var v = $(this).data("amount");
+                    total += parseFloat(v);
+                });
+                $("#totalSelected").html("£" + total.toFixed(2));
+                if(total>0)
+                {
+                    $("#takePaymentMenuItem").show();
+                    $("#exportPaymentMenuItem").show();
+                }else
+                {
+                    $("#takePaymentMenuItem").hide();
+                    $("#exportPaymentMenuItem").hide();
+                }
+            });
+    </script>
+}

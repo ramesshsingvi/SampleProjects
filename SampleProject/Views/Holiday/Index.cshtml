@@ -1,0 +1,64 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Web;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model List<Holiday>
+
+@{
+    ViewBag.Title = "Holidays";
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+<div class="dropdown">
+    <button text="Action" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+        Action <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        <li>
+            <a onclick="javascript:showAddHolidayModal()">
+                <i class="fa fa-plus"></i> Add Holiday
+            </a>
+        </li>
+        <li><a href="@Url.Action("Download", "Holiday")"  id="downloadholidays" data-toggle="confirmation" data-title="Are you sure you want to download public holidays?"><i class="fa fa-download"></i> Download Holidays</a></li>
+    </ul>
+</div>
+
+@Html.Partial("_Feedback")
+
+@Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(x => x.Date).Titled("Date").RenderValueAs(x => x.Date.ToShortDateString()).Filterable(true).Sortable(true);
+    columns.Add(x => x.Description).Titled("Description").Filterable(true).Sortable(true);
+    columns.Add(x => x.Notes).Titled("Notes").Filterable(true).Sortable(true);
+    columns.Add(x => x.Region).Titled("Region").RenderValueAs(x => x.Region.GetDescription()).Filterable(true).Sortable(true);
+    columns.Add(x => x.ID, "Action Column").RenderValueAs(x => CustomMenuColumn(x)).Encoded(false).Sanitized(false).Titled("Action");
+}).WithPaging(20)
+
+<div id="modalPlaceholder" />
+
+@helper CustomMenuColumn(Holiday holiday)
+{
+    <text>
+        <div class="dropdown">
+            <button text="Action" class="btn btn-info dropdown-toggle btn-xs" data-toggle="dropdown">
+                Action <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li>
+                    <a onclick="javascript:showEditHolidayModal(@holiday.ID)">
+                        <i class="fa fa-pencil-alt"></i> Edit
+                    </a>
+                </li>
+                <li>
+                    <a href="@Url.Action("Delete", "Holiday", new { id = holiday.ID})" id="deleteholiday" data-toggle="confirmation" data-title="Are you sure you want to delete the holiday?"><i class="fa fa-trash-alt"></i> Delete</a>
+                </li>
+            </ul>
+        </div>
+    </text>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,43 @@
+﻿@using TrustonTap.Common.Models
+@using System.Collections.Generic;
+@using TrustonTap.Web.ViewModels;
+
+@model CarerAvailability
+
+@using (Html.BeginCollectionItem("carerAvailability"))
+{
+    @Html.HiddenFor(x => x.ID)
+    @Html.HiddenFor(x => x.CarerID)
+    @Html.HiddenFor(x => x.DayOfWeek)
+    @Html.HiddenFor(x => x.CreatedDate)
+
+    <div class='table-row day @(Model.IsWeekend ? "weekend" : "weekday")' data-date="@(Model.DayOfWeek)">
+        <div class="table-cell fixed-width-130 text-nowrap">
+            @(((DayOfWeek)Model.DayOfWeek).ToString())
+        </div>
+        <div class="table-cell fixed-width-90">
+            @Html.EditorFor(m => m.AvailableSlot1, "NullableBoolean")
+        </div>
+        <div class="table-cell fixed-width-90">
+            @Html.EditorFor(m => m.AvailableSlot2, "NullableBoolean")
+        </div>
+        <div class="table-cell fixed-width-90">
+            @Html.EditorFor(m => m.AvailableSlot3, "NullableBoolean")
+        </div>
+        <div class="table-cell fixed-width-90">
+            @Html.EditorFor(m => m.AvailableSlot4, "NullableBoolean")
+        </div>
+        <div class="table-cell fixed-width-90">
+            @Html.EditorFor(m => m.AvailableSlot5, "NullableBoolean")
+        </div>
+        <div class="table-cell fixed-width-90">
+            @Html.EditorFor(m => m.AvailableSlot6, "NullableBoolean")
+        </div>
+        <div class="table-cell fixed-width-90">
+            @Html.EditorFor(m => m.AvailableSlot7, "NullableBoolean")
+        </div>
+        <div class="table-cell fixed-width-90">
+            @Html.EditorFor(m => m.AvailableSlot8, "NullableBoolean")
+        </div>
+    </div>
+}

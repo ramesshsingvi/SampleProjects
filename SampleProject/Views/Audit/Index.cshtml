@@ -1,0 +1,55 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using TrustonTap.Web.ViewModels;
+@using GridMvc.Html;
+
+@model AuditLogSearchViewModel
+
+@{
+        ViewBag.Title = "Audit History";
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+@using (Html.BeginForm("Index", "Audit", FormMethod.Get))
+{
+    <div class="panel panel-primary searchpanel">
+        <div class="panel-heading">
+            <h3 class="panel-title">Search</h3>
+            <span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-up"></i></span>
+        </div>
+        <div class="panel-body">
+            <div class="container">
+                <div class="row form-group">
+                        <div class="col-xs-2"><label>Search For:</label></div>
+                        <div class="col-xs-4">@Html.TextBoxFor(x=>x.SearchString, new { @class = "form-control" })</div>
+                        <div class="col-xs-2"><label>Type:</label></div>
+                        <div class="col-xs-4">@Html.CustomEnumDropDownListFor(x=>x.EventType, new { @class = "form-control" })</div>
+                </div>
+                <div class="row form-group">
+                        <div class="col-xs-2"><label>Date From:</label></div>
+                        <div class="col-xs-4">@Html.TextBoxFor(x => x.DateFrom, "{0:dd/MM/yyyy}", new { required = true, @class = "datepicker form-control" })</div>
+                        <div class="col-xs-2"><label>Date To:</label></div>
+                        <div class="col-xs-4">@Html.TextBoxFor(x => x.DateTo, "{0:dd/MM/yyyy}", new { required = true, @class = "datepicker form-control" })</div>
+                </div>
+
+                
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <button id="btnSearch" type="submit" class="btn btn-info pull-right"><i class="fa fa-search fa-md"></i> Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@Html.Grid(Model.Results).Columns(columns =>
+{
+    columns.Add(x => x.User).Titled("User").Sortable(true).Filterable(true);
+    columns.Add(x => x.EventType).RenderValueAs(x => x.EventType.GetDescription()).Titled("Event").Sortable(true).Filterable(true);
+    columns.Add(x => x.Details).RenderValueAs(x => x.Details.Truncate(255)).Titled("Details").Sortable(true).Filterable(true);
+    columns.Add(x => x.CreatedDate).Titled("Date").Sortable(true).Filterable(true);
+}).WithPaging(20)

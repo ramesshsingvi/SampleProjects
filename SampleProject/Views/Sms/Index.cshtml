@@ -1,0 +1,90 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model TrustonTap.Web.ViewModels.SmsViewModel
+
+@{
+    ViewBag.Title = "Send Sms";
+
+}
+@{
+    if (Model.IsPopup)
+    {
+        Layout = "~/Views/Shared/_LayoutPopup.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+@Html.Partial("_Feedback")
+@using (Html.BeginForm("Index", "Sms", FormMethod.Post, new { id = "sendSmsForm" }))
+{
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="container">
+
+                <div class="row">
+                    <div class="col-xs-4"><label>To</label></div>
+                    <div class="col-xs-8">
+                        @Html.DisplayFor(s => s.Name)
+                    @Html.HiddenFor(s => s.UserId)
+                    @Html.HiddenFor(s => s.IsPopup)
+                    @Html.HiddenFor(s => s.ResponseSource)
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-xs-4"><label>Phone</label></div>
+                <div class="col-xs-8">
+                    @Html.DisplayFor(s => s.ToNumber)
+                @Html.HiddenFor(s => s.ToNumber)
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-4"><label>Standard Response</label></div>
+            <div class="col-xs-8">@Html.DropDownListFor(s => s.StandardResponses, new SelectList(Model.StandardResponses, "Value", "Text"), htmlAttributes: new { @class = "form-control", id = "StandardResponses", onchange = "OnStandardResponseSelect(this.value)" })</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-4"><label>Message</label></div>
+            <div class="col-xs-8">
+                @Html.TextAreaFor(s => s.Message, htmlAttributes: new { @rows = 7, @style = "width:100%;padding:2px;" })<br />
+                <div id="counter"></div>
+            @Html.ValidationMessageFor(s => s.Message, "", htmlAttributes: new { @class = "text-danger" })
+        </div>
+
+    </div>
+    <div class="row pull-right">
+        <button id="btnSave" type="submit" class="btn btn-info">Send SMS</button>&nbsp;
+        @if (Model.IsPopup)
+                {
+            <button id="btnClose" type="button" class="btn btn-danger" onclick="CloseWindow();">Close</button>
+        }
+
+    </div>
+
+</div>
+</div>
+</div>
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/maxlength")
+
+    <script>
+        $(document).ready(function () {
+            $("#Message").MaxLength(
+            {
+                MaxLength: 160,
+                DisplayCharacterCount: true,
+                CharacterCountControl: $('#counter')
+            });
+        });
+
+    </script>
+    }   

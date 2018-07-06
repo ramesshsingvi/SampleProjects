@@ -1,0 +1,124 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model Dictionary<User, List<Booking>>
+
+@{
+    ViewBag.Title = "Customers/Payers";
+    var headerInfo = ViewBag.HeaderInfo;
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+<div class="dropdown">
+    <button text="Action" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+        Action <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        <li><a href="@Url.Action("Allocate", "CustomerPayment")"><i class="fa fa-money-bill-alt"></i> Allocate/Refund Payments</a></li>
+    </ul>
+</div>
+
+@Html.Partial("_Feedback")
+
+@Html.DisplayFor(x => headerInfo, "HeaderInfo")
+
+@using (Html.BeginForm("Index", "CustomerPayment", FormMethod.Get))
+{
+    <div class="panel panel-primary searchpanel">
+        <div class="panel-heading">
+            <h3 class="panel-title">Search</h3>
+            <span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-up"></i></span>
+        </div>
+        <div class="panel-body">
+            <div class="container">
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-xs-2"><label>Customer/Payer Name:</label></div>
+                        <div class="col-xs-6">@Html.TextBox("Name", (string)ViewBag.Name, new { @class = "form-control" })</div>
+                        <div class="col-xs-4">
+                            <button id="btnSearch" type="submit" class="btn btn-info pull-right"><i class="fa fa-search fa-md"></i> Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@Html.Grid(Model.Keys).Columns(columns =>
+{
+    columns.Add(x => x.ID).Titled("Customer/Payer ID").RenderValueAs(x => x.ID.ToString()).Filterable(true).Sortable(true);
+    columns.Add(x => x.FormattedName).Titled("Name").RenderValueAs(x => CustomerColumn(x)).Encoded(false).Sanitized(false).Filterable(true).Sortable(true);
+    columns.Add(x => x.PaymentSummary.AmountOutstanding).Titled("Amount Outstanding").RenderValueAs(x => (x.PaymentSummary.AmountOutstanding).ToMoney()).Filterable(true).Sortable(true);
+    columns.Add(x => x.PaymentSummary.UnallocatedTransactions).Titled("Amount Unallocated").RenderValueAs(x => x.PaymentSummary.UnallocatedTransactions.ToMoney()).Filterable(true).Sortable(true);
+    columns.Add(x => x.PaymentSummary.Balance, "Balance").Titled("Balance").RenderValueAs(x => x.PaymentSummary.Balance.ToMoney()).Filterable(true).Sortable(true);
+    columns.Add(x => x.ID, "Action Column").RenderValueAs(x => CustomMenuColumn(x)).Encoded(false).Sanitized(false).Titled("Action");
+}).WithPaging(20)
+
+<div id="modalPlaceholder" />
+
+
+@helper CustomerColumn(User user)
+{
+    if (user.PaymentSummary.PayerIsCustomer)
+    {
+        <a href="@Url.Action("Details", "Customer", new { id = user.ID })">@user.ToString()</a>
+    }
+    else
+    {
+        <a href="@Url.Action("Details", "Payer", new { id = user.ID })">@user.ToString()</a>
+    }
+}
+
+
+@helper CustomMenuColumn(User user)
+{
+    <text>
+        <div class="dropdown">
+            <button text="Action" class="btn btn-info dropdown-toggle btn-xs" data-toggle="dropdown">
+                Action <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li>
+                    <a href="@Url.Action("Index", "CustomerInvoice", new { id = user.ID})"><i class="fa fa-eye"></i> View</a>
+                </li>
+                <li>
+                    <a onclick="javascript:showTakePaymentModal(@user.ID)">
+                        <i class="fa fa-credit-card"></i> Take Payment
+                    </a>
+                </li>
+                <li>
+                    <a href="@Url.Action("PayerPaymentHistory", "CustomerPayment", new { id = user.ID})"><i class="fa fa-history"></i> View Payment History</a>
+                </li>
+                <li>
+                    @if (user.PaymentSummary.UnallocatedTransactions > 0)
+                    {
+                        <a href="@Url.Action("Allocate", "CustomerPayment", new { id = user.ID })"><i class="fa fa-money-bill-alt"></i> Distribute/Transfer Unallocated</a>
+                    }
+                </li>
+            </ul>
+        </div>
+    </text>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+<script>
+        $(document).on('click', '.panel-heading span.clickable', function (e) {
+            var $this = $(this);
+            if (!$this.hasClass('panel-collapsed')) {
+                $this.parents('.searchpanel').find('.panel-body').slideUp();
+                $this.addClass('panel-collapsed');
+                $this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+            } else {
+                $this.parents('.searchpanel').find('.panel-body').slideDown();
+                $this.removeClass('panel-collapsed');
+                $this.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
+            }
+        })
+</script>
+}

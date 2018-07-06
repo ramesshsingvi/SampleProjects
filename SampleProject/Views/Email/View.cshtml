@@ -1,0 +1,22 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model EmailMessage
+
+@{
+    ViewBag.Title = "Email Message";
+    var headerInfo = ViewBag.HeaderInfo;
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+@Html.DisplayFor(x => headerInfo, "HeaderInfo")
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="container">
+            @Html.Raw(@Model.Body)
+        </div>
+    </div>
+</div>

@@ -1,0 +1,35 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using TrustonTap.Web.ViewModels;
+
+@{
+    ViewBag.Title = $"Maintenance";
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+@Html.Partial("_Feedback")
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="container">
+            <div class="row">
+                @if (ApplicationSettings.IsTestEnvironment)
+            {
+                <div class="col-xs-6">
+                    <a href="@Url.Action("Reset", "Maintenance")" id="resetSystem" data-toggle="confirmation" data-title="Are you sure you want to reset the payment system?">[Reset Payment System]</a>
+                </div>
+            }
+            <div class="col-xs-6">
+                <a href="@Url.Action("Backup", "Maintenance")" id="backupDatabase" data-toggle="confirmation" data-title="Are you sure you want to backup the payment system database?">[Backup Payment System Database]</a>
+            </div>
+            <div class="col-xs-6">
+                <a href="@Url.Action("RunZohoSync", "Maintenance")" id="zohoFeed">[Sync Previous Week To CRM]</a>
+            </div>
+                <div class="col-xs-6">
+                    <a href="@Url.Action("Status", "Maintenance")" id="zohoFeed">[View Application Status]</a>
+                </div>
+        </div>
+    </div>
+</div>
+</div>

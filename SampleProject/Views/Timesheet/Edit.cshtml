@@ -1,0 +1,209 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using TrustonTap.Web.ViewModels;
+
+@model TimesheetWeekViewModel
+
+@{
+    ViewBag.Title = $"Timesheet From {Model.Carer.FormattedName} [{Model.Carer.ID}]";
+    var showExpenses = TempData.ContainsKey("ShowExpenses") && (bool)TempData["ShowExpenses"];
+    var showSummary = TempData.ContainsKey("ShowSummary") && (bool)TempData["ShowSummary"];
+    var headerInfo = ViewBag.HeaderInfo;
+}
+<h2>@ViewBag.Title<span class="badge pull-right">@Model.Status.GetDescription()</span></h2>
+
+<h3>@ViewBag.Message</h3>
+
+@Html.DisplayFor(x=> headerInfo, "HeaderInfo")
+
+<div class="dropdown">
+    <button text="Action" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+        Action <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        <li>
+            <a onclick="javascript:saveAndShowExpenses()">
+                Add/Edit Expenses
+            </a>
+        </li>
+        <li>
+            <a onclick="javascript:exportTimesheet(@Model.ID)">
+                Export
+            </a>
+        </li>
+        @if ((bool)ViewBag.CanEdit)
+        {
+            <li>
+                <a id="reset" data-toggle="confirmation" data-title="Are you sure you want to reset the timesheet?">
+                    Reset
+                </a>
+            </li>
+            <li>
+                <a onclick="javascript: saveTimesheet()">
+                    Save
+                </a>
+            </li>
+            <li>
+                <a id="delete" data-toggle="confirmation" data-title="Are you sure you want to delete the timesheet?" href="@Url.Action("Delete", "Timesheet", new { id = Model.ID})">Delete</a>
+            </li>
+        }
+        @if (Model.Status == TimesheetStatus.Created || Model.Status == TimesheetStatus.Rejected)
+        {
+            <li>
+                <a onclick="javascript: saveAndShowSummary()">
+                    Submit
+                </a>
+            </li>
+        }
+        @if ((Model.Status == TimesheetStatus.Submitted || Model.Status == TimesheetStatus.Approved) && !Model.CustomerPaymentGenerated)
+        {
+            <li>
+                <a href="@Url.Action("Unsubmit", "Timesheet", new { id = Model.ID})">Unsubmit</a>
+            </li>
+        }
+    </ul>
+</div>
+
+@Html.Partial("_Feedback")
+
+@using (Html.BeginForm("Edit", "Timesheet", FormMethod.Post, new { id = "editForm" }))
+{
+    <div id="scheduler" class="table-layout">
+        <div class="table-row" style="border-top: none;">
+            <div class="table-cell fixed-width-130">
+                <label>Day</label>
+            </div>
+            <div class="table-cell fixed-width-180">
+                <div class="carousel slide" id="shifts">
+                    <div class="carousel-inner">
+                        <div class="item" style="text-align: center">
+                            <label>Shift 1</label><span class="slide-control badge pull-right" data-slide="next"><i class="fa fa-angle-right"></i></span><br />
+                            <div class="container">
+                                <div class="row" style="padding: 0px">
+                                    <div class="col-xs-5" style="padding: 0px">
+                                        <label>Start</label>
+                                    </div>
+                                    <div class="col-xs-7" style="padding: 0px">
+                                        <label>No. Hrs</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item" style="text-align: center">
+                            <span class="slide-control badge pull-left" data-slide="prev"><i class="fa fa-angle-left"></i></span>
+                            <label>Shift 2</label><span class="slide-control badge pull-right" data-slide="next"><i class="fa fa-angle-right"></i></span><br />
+                            <div class="container">
+                                <div class="row" style="padding: 0px">
+                                    <div class="col-xs-5" style="padding: 0px">
+                                        <label>Start</label>
+                                    </div>
+                                    <div class="col-xs-7" style="padding: 0px">
+                                        <label>No. Hrs</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item" style="text-align: center">
+                            <span class="slide-control badge pull-left" data-slide="prev"><i class="fa fa-angle-left"></i></span>
+                            <label>Shift 3</label><span class="slide-control badge pull-right" data-slide="next"><i class="fa fa-angle-right"></i></span><br />
+                            <div class="container">
+                                <div class="row" style="padding: 0px">
+                                    <div class="col-xs-5" style="padding: 0px">
+                                        <label>Start</label>
+                                    </div>
+                                    <div class="col-xs-7" style="padding: 0px">
+                                        <label>No. Hrs</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item" style="text-align: center">
+                            <span class="slide-control badge pull-left" data-slide="prev"><i class="fa fa-angle-left"></i></span>
+                            <label>Shift 4</label><br />
+                            <div class="container">
+                                <div class="row" style="padding: 0px">
+                                    <div class="col-xs-5" style="padding: 0px">
+                                        <label>Start</label>
+                                    </div>
+                                    <div class="col-xs-7" style="padding: 0px">
+                                        <label>No. Hrs</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="table-cell fixed-width-80" style="text-align:center">
+                <label>
+                    Day<br />
+                    Total
+                </label>
+            </div>
+            <div class="table-cell">
+                <label>Notes</label>
+            </div>
+        </div>
+        @Html.HiddenFor(x => x.ID)
+        @Html.EditorFor(m => m.Days)
+        @Html.CheckBoxFor(m => m.ShowExpensesModal, new { id = "showExpenses", style = "display:none" })
+        @Html.CheckBoxFor(m => m.ShowSummaryModal, new { id = "showSummary", style = "display:none" })
+        <div class="table-row" style="border-bottom: none;">
+            <div class="table-cell fixed-width-130"></div>
+            <div class="table-cell fixed-width-180" style="text-align: right">
+                <label>Total (Hrs):</label>
+            </div>
+            <div class="table-cell fixed-width-60 text-center">
+                <input class="weekTotal form-control" style="display: inline-block; float: none;" id="totalWeekHours" value="0" />
+            </div>
+            <div class="table-cell"></div>
+        </div>
+    </div>
+}
+
+<div id="modalPlaceholder" />
+
+@section Scripts {
+    @Scripts.Render("~/bundles/timesheet")
+    <script>
+        $(document).ready(function () {
+
+            $('.carousel-inner').find('.item:first').addClass('active');
+
+            $('.carousel').carousel({
+                interval: false
+            });
+
+            $('.slide-control').on('click', function () {
+                $('.carousel').carousel(this.getAttribute('data-slide'));
+            });
+
+            @if (!(bool)ViewBag.CanEdit) {
+            <text>
+            $('#timesheetContainer input.form-control').attr('readonly', true);
+            </text>
+            }
+
+            //$('#scheduler').formNavigation();
+
+            @if (showExpenses)
+            {
+            <text>
+            showExpensesModal(@Model.ID.ToString());
+            </text>
+            }
+
+            @if (showSummary)
+            {
+            <text>
+            showSummaryModal(@Model.ID.ToString());
+            </text>
+            }
+
+            $("#reset").click(function () {
+                resetTimesheet();
+            });
+
+        });
+    </script>
+}

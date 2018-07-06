@@ -1,0 +1,27 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Web.ViewModels;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model List<PaymentAllocationViewModel>
+
+@{
+    var transaction = (BankTransaction)ViewBag.Transaction;
+    ViewBag.Title = "Payment Allocation For Payment ID " + transaction.ID.ToString();
+    var headerInfo = ViewBag.HeaderInfo;
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+@Html.DisplayFor(x => headerInfo, "HeaderInfo")
+
+@Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(x => x.OriginatingReference).Titled("Invoice Number").RenderValueAs(x => ReferenceColumn(x)).Encoded(false).Sanitized(false).Sortable(true);
+    columns.Add(x => x.Allocated).RenderValueAs(x => x.Allocated.ToMoney()).Titled("Allocated").Filterable(true).Sortable(true);
+}).WithPaging(20)
+
+@helper ReferenceColumn(PaymentAllocationViewModel paymentAllocation)
+{
+    @Html.ActionLink(paymentAllocation.OriginatingReference, "InvoiceDetails", "CustomerInvoice", routeValues: new { ID = paymentAllocation.CustomerStatementID }, htmlAttributes: null)
+}

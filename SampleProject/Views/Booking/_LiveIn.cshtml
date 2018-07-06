@@ -1,0 +1,63 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using TrustonTap.Web.ViewModels;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model BookingViewModel
+
+<div class="form-group">
+    <div class="row">
+        <div class="col-xs-3"></div>
+        <div class="col-xs-2"><label></label></div>
+        <div class="col-xs-2"><label>Weekly Rate*</label></div>
+        <div class="col-xs-2"><label>Hourly Rate</label></div>
+        <div class="col-xs-2"><label>Total</label></div>
+    </div>
+    <div class="row">
+        <div class="col-xs-3"><label>Number Of Hours Per Week:</label></div>
+        <div class="col-xs-2">
+            <div class="input-group">
+                @Html.TextBoxFor(x => x.Booking.MaxWeeklyHours, new { @class = "form-control  hours", placeholder = "0", type = "number", min = "0", max="80", step = "1" })
+                <span class="input-group-addon">hrs</span>&nbsp;@@
+            </div>
+        </div>
+        <div class="col-xs-2">
+            <div class="input-group">
+                <span class="input-group-addon">£</span>
+                @Html.TextBox("weeklyRate", null, new { @class = "form-control currency", placeholder = "0.00", type = "number", min = "0", step = "0.01", required="required" })
+            </div>
+            @Html.HiddenFor(x => x.Booking.HourlyRate)
+        </div>
+        <div class="col-xs-2"><span id="hourlyRate">@(Model.Booking.HourlyRate.HasValue ? Model.Booking.HourlyRate.Value.ToMoney() : "£0.00")</span></div>
+        <div class="col-xs-2"><span id="ratetotal">£0.00</span></div>
+    </div>
+</div>
+<script>
+    $("#weeklyRate").change(function (e) {
+        var weeklyRate = parseFloat($(this).val());
+        var hourlyRate = weeklyRate / 60;
+
+        if (isNaN(hourlyRate)) hourlyRate = 0;
+
+        $("#hourlyRate").html("£" + hourlyRate.toFixed(2));
+        $("#@Html.IdFor(x => x.Booking.HourlyRate)").val(hourlyRate.toFixed(2)).change();
+    });
+
+    $("#@Html.IdFor(x => x.Booking.MaxWeeklyHours),#@Html.IdFor(x => x.Booking.HourlyRate)").change(function (e) {
+        var hourlyRate = parseFloat($("#@Html.IdFor(x => x.Booking.HourlyRate)").val());
+        if (isNaN(hourlyRate)) hourlyRate = 0;
+
+        var hours = parseFloat($("#@Html.IdFor(x => x.Booking.MaxWeeklyHours)").val());
+        var total = hours * hourlyRate;
+        if (isNaN(total)) total = 0;
+
+        $("#hourlyRate").html("£" + hourlyRate.toFixed(2));
+        $("#ratetotal").html("£" + total.toFixed(2));
+        updateBookingTotal();
+    });
+
+    $("#weeklyRate").val((@(Model.Booking.HourlyRate??0) * 60).toFixed(2)).change();
+
+</script>

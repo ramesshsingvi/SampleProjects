@@ -1,0 +1,147 @@
+﻿@using TrustonTap.Web;
+@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model List<CustomerStatement>
+
+@{
+    StatementBatch batch = ViewBag.Batch;
+    ViewBag.Title = "Invoice Batch " + batch.Reference;
+    var headerInfo = ViewBag.HeaderInfo;
+}
+<h2>@ViewBag.Title<span class="badge pull-right">@batch.Status.GetDescription()</span></h2>
+
+<h3>@ViewBag.Message</h3>
+
+<div class="dropdown">
+    <button text="Action" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+        Action <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        @if (batch.PermitBatchDelete)
+        {
+            <li><a href="@Url.Action("DeleteBatch", "CustomerInvoice", new { id = batch.ID})" id="deletebatch" data-toggle="confirmation" data-title="Are you sure you want to cancel the batch?"><i class="fa fa-times"></i> Cancel Generated Batch</a></li>
+        }
+        <li><a href="@Url.Action("DownloadPaymentSchedule", "Document", new { id = batch.ID})"><i class="fa fa-external-link-alt"></i> Export Payments</a></li>
+        @if (batch.Status == StatementBatchStatus.StatementsGenerated)
+        {
+            <li>
+                <a onclick="javascript:showPostInvoicesModal(@batch.ID)">
+                    <i class="fa fa-envelope"></i> Post Customer Invoices
+                </a>
+            </li>
+        }
+    </ul>
+</div>
+
+@Html.Partial("_Feedback")
+
+@Html.DisplayFor(x => headerInfo, "HeaderInfo")
+
+@Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(x => x.Reference).Titled("TOT Invoice Number").RenderValueAs(x => ReferenceColumn(x)).Encoded(false).Sanitized(false).Sortable(true);
+    columns.Add(x => x.Payer.FormattedName).RenderValueAs(x => PayerColumn(x)).Encoded(false).Sanitized(false).Titled("Customer/Payer").Sortable(true);
+    columns.Add(x => x.ID, "Charges").Titled("Charges").RenderValueAs(x => x.Payments.Where(y => y.Type == PaymentType.Timesheet).Sum(y => y.Total).ToMoney()).Sortable(true);
+    columns.Add(x => x.ID, "AdminFee").Titled("Admin Fee").RenderValueAs(x => x.Payments.Where(y => y.Type == PaymentType.Charge).Sum(y => y.Total).ToMoney()).Sortable(true);
+    columns.Add(x => x.ID, "Mileage").Titled("Mileage").RenderValueAs(x => x.Payments.Where(y => y.Type == PaymentType.Expense && y.Expense.Type == ExpenseType.Mileage).Sum(y => y.Total).ToMoney()).Sortable(true);
+    columns.Add(x => x.ID, "Expenses").Titled("Expenses").RenderValueAs(x => x.Payments.Where(y => y.Type == PaymentType.Expense && y.Expense.Type == ExpenseType.Other).Sum(y => y.Total).ToMoney()).Sortable(true);
+    columns.Add(x => x.Total).Titled("Total").RenderValueAs(x => x.Total.ToMoney()).Sortable(true);
+    columns.Add(x => x.AmountOutstanding, "Fully Paid").Titled("Paid?").RenderValueAs(x => (x.AmountPaid > 0 && x.AmountOutstanding == 0).ToYesNo()).Sortable(true);
+    columns.Add(x => x.Booking.PaymentMethod).RenderValueAs(x => x.Booking.PaymentMethod.GetBadge() + (x.Booking.CareType == CareType.LiveIn ? ("&nbsp;<i title='Live-in' class='fa fa-home'></i>") : "")).Encoded(false).Sanitized(false).Titled("").Sortable(true);
+    columns.Add(x => x.Status).RenderValueAs(x => "<div class=\"badge\">" + x.Status.GetDescription() + "</div>").Encoded(false).Sanitized(false).Titled("Status").Sortable(true);
+    columns.Add(x => x.Timesheet.HoldFromCarerStatement).RenderValueAs(x => x.Timesheet.HoldFromCarerStatement ? ("<i title='Held From Carer Statement' style='color:red' class='fa fa-exclamation-triangle'></i>") : "").Encoded(false).Sanitized(false).Titled("").Sortable(true);
+    columns.Add(x => x.ID, "Action Column").RenderValueAs(x => CustomMenuColumn(x)).Encoded(false).Sanitized(false).Titled("Action");
+}).WithPaging(20)
+
+<div id="modalPlaceholder" />
+
+@helper ReferenceColumn(CustomerStatement customerStatement)
+{
+    @Html.ActionLink(customerStatement.Reference, "ViewByReference", "Timesheet", routeValues: new { Reference = customerStatement.Reference }, htmlAttributes: null)
+}
+
+@helper PayerColumn(CustomerStatement customerStatement)
+{
+    if (customerStatement.PayerID == customerStatement.CustomerID)
+    {
+        <a href="@Url.Action("Details", "Customer", new { id = @customerStatement.Customer.ID })">@customerStatement.Customer.FormattedName</a>
+    }
+    else
+    {
+        <a href="@Url.Action("Details", "Payer", new { id = @customerStatement.Payer.ID })">@customerStatement.Payer.FormattedName</a>
+    }
+}
+
+@helper CustomMenuColumn(CustomerStatement customerStatement)
+{
+    <text>
+        <div class="dropdown">
+            <button text="Action" class="btn btn-info dropdown-toggle btn-xs" data-toggle="dropdown">
+                Action <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li>
+                    <a href="@Url.Action("InvoiceDetails", "CustomerInvoice", new { Id = customerStatement.ID})"><i class="fa fa-eye"></i> View</a>
+                </li>
+                @if ((customerStatement.PermitCancel))
+                {
+                    <li><a href="@Url.Action("Cancel", "CustomerInvoice", new { id = customerStatement.ID })" id="cancelInvoice" data-toggle="confirmation" data-title="Are you sure you want to cancel the invoice?"><i class="fa fa-times"></i> Cancel Invoice</a></li>
+                }
+                @if (customerStatement.PermitUnallocate)
+                {
+                    <li><a href="@Url.Action("Unallocate", "CustomerInvoice", new { id = customerStatement.ID})" id="unallocate" data-toggle="confirmation" data-title="Are you sure you want to credit payments back to customer?"><i class="fa fa-money-bill-alt"></i> Credit Payments Back To Customer </a></li>
+                }
+                @if (!customerStatement.Timesheet.CarerPaymentGenerated)
+                {
+                    if (!customerStatement.Timesheet.HoldFromCarerStatement)
+                    {
+                        <li>
+                            <a href="@Url.Action("HoldFromCarerStatement", "Timesheet", new { id = customerStatement.Timesheet.ID })" id="holdback" data-toggle="confirmation" data-title="Are you sure you want to hold back the timesheet?"><i class="fa fa-exclamation-triangle"></i> Hold From Carer Statement</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li>
+                            <a href="@Url.Action("HoldFromCarerStatement", "Timesheet", new { id = customerStatement.Timesheet.ID, hold = false })"><i class="fa fa-exclamation-triangle"></i> End Hold From Carer Statement</a>
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+    </text>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/ckeditor")
+    <script type="text/javascript">
+    $(function () {
+        var charges = 0.00;
+        var mileage = 0.00;
+        var fees = 0.00;
+        var expenses = 0.00;
+        var total = 0.00;
+
+        $("tr.grid-row").each(function () {
+            var tr = $(this);
+            var rows = $(tr).children();
+
+            charges += parseFloat(rows[2].innerHTML.replace("£", ""));
+            fees += parseFloat(rows[3].innerHTML.replace("£", ""));
+            mileage += parseFloat(rows[4].innerHTML.replace("£", ""));     
+            expenses += parseFloat(rows[5].innerHTML.replace("£", ""));
+            total += parseFloat(rows[6].innerHTML.replace("£", ""));
+        });
+
+        charges = charges.toFixed(2);
+        mileage = mileage.toFixed(2);
+        expenses = expenses.toFixed(2);
+        fees = fees.toFixed(2);
+        total = total.toFixed(2);
+        var trTotals = "<tr style='color:red;font-weight:bold;'><td></td><td></td><td>£" + charges + "</td><td>£" + fees  + "</td><td>£" + mileage + "</td><td>£" + expenses + "</td><td>£" + total + "</td><td></td><td></td><td></td><td></td><td></td></tr>"
+        $("tr.grid-row:last").after(trTotals);
+    });
+
+    </script>
+}

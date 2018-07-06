@@ -1,0 +1,35 @@
+﻿@using TrustonTap.Common
+@model List<TrustonTap.Common.Models.BookingStatusHistory>
+
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Reason</th>
+                <th>Notes</th>
+                <th>User</th>
+            </tr>
+        </thead>
+        @foreach (var statusChange in Model)
+        {
+        <tr>
+            <td>
+                @Html.ValueFor(model => statusChange.CreatedDate, "{0:dd/MM/yyyy HH:mm}")
+            </td>
+            <td>
+                @Html.Raw(statusChange.BookingStatus.GetDescription())
+            </td>
+            <td>
+                @Html.Raw(statusChange.Reason)
+            </td>
+            <td>
+                @Html.Raw(statusChange.Notes)
+            </td>
+            <td>
+                @(statusChange.CreatedByUser?.FormattedName)
+            </td>
+        </tr>
+        }
+    </table>

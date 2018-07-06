@@ -1,0 +1,39 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using TrustonTap.Web.ViewModels;
+
+@model WorkingHours
+
+<div id="scheduler" class="table-layout">
+    <div class="table-row">
+        <div class="table-cell fixed-width-130">
+            <label>Day</label>
+        </div>
+        <div class="table-cell fixed-width-90">
+            <label>7am-9am</label>
+        </div>
+        <div class="table-cell fixed-width-90">
+            <label>9am-11am</label>
+        </div>
+        <div class="table-cell fixed-width-90">
+            <label>11am-1pm</label>
+        </div>
+        <div class="table-cell fixed-width-90">
+            <label>1pm-3pm</label>
+        </div>
+        <div class="table-cell fixed-width-90">
+            <label>3pm-5pm</label>
+        </div>
+        <div class="table-cell fixed-width-90">
+            <label>5pm-7pm</label>
+        </div>
+        <div class="table-cell fixed-width-90">
+            <label>7-10pm</label>
+        </div>
+        <div class="table-cell fixed-width-90">
+            <label>Overnight</label>
+        </div>
+    </div>
+    @Html.EditorForModel()
+</div>
+

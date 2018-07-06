@@ -1,0 +1,90 @@
+﻿
+@using TrustonTap.Common.Models;
+@using TrustonTap.Web.ViewModels;
+
+@model List<ExpenseViewModel>
+
+@{
+    var daysOfTheWeek = Model.Select(x => x.ExpenseDate).Distinct().OrderBy(x => x.Date);
+    var carer = (User)ViewBag.Carer;
+    var careRecipient = (string)ViewBag.CareRecipient;
+    var weekEnding = (DateTime)ViewBag.WeekEnding;
+}
+
+@using (Html.BeginForm("Expenses", "Timesheet", FormMethod.Post))
+{
+    <!-- Modal -->
+    <div id="expensesModal" class="modal fade draggable-modal" role="dialog">
+        <div class="modal-dialog" style="width:1250px;">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Expenses For @carer.FormattedName W/E @weekEnding.ToShortDateString() Care Recipient: @careRecipient</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table" id="expenses">
+                        <thead>
+                            <tr>
+                                <th>Day</th>
+                                <th>Expense</th>
+                                <th>Mileage</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        @foreach (var day in daysOfTheWeek)
+                        {
+                            var expenses = Model.Where(x => x.ExpenseDate == day).OrderByDescending(x => x.ExpenseTypeID);
+                            var notes = expenses.FirstOrDefault(x => !String.IsNullOrEmpty(x.Notes))?.Notes;
+                            <tr class='day weekday'>
+                                <td class="dayLabel">
+                                    @(day.DayOfWeek.ToString())
+                                </td>
+                                @foreach (var expense in expenses)
+                                {
+                                    @Html.EditorFor(m => expense, new { Notes = notes })
+                                }
+                            </tr>
+
+                        }
+
+                        <tr class=''>
+                            <td class="dayLabel"><b>Total:</b></td>
+                            <td>
+                                <div class="input-group">
+                                    <span class="input-group-addon">£</span>
+                                    <input id="totalWeekExpenses" type="number" class="form-control currency" readonly />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input id="totalWeekMiles" type="number" class="form-control" readonly />
+                                    <span class="input-group-addon">M</span>
+                                </div>
+                            </td>
+                            <td></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info pull-left" data-dismiss="modal"><i class="fa fa-times fa-md"></i> Close</button>
+                    @if (ViewBag.CanEdit)
+                    {
+                    <button id="btnSave" type="submit" class="btn btn-info"><i class="fa fa-save fa-md"></i> Save</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    onPageLoad();
+
+    
+    @if (!(bool)ViewBag.CanEdit) {
+        <text>
+            $('#expensesModal input.form-control').attr('readonly', true);
+        </text>
+    }
+</script>

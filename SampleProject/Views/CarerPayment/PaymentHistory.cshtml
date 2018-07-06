@@ -1,0 +1,24 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model List<BankTransaction>
+
+@{
+    var carer = (User)ViewBag.Carer;
+    ViewBag.Title = "Carer Payment History For " + carer.ToString();
+    var headerInfo = ViewBag.HeaderInfo;
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+@Html.DisplayFor(x => headerInfo, "HeaderInfo")
+
+@Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(x => x.ID).Titled("Payment ID").RenderValueAs(x => x.ID.ToString()).Filterable(true).Sortable(true);
+    columns.Add(x => x.Reference).Titled("Reference").RenderValueAs(x => x.Reference).Filterable(true).Sortable(true);
+    columns.Add(x => x.Amount).Titled("Payment Amount").RenderValueAs(x => Math.Abs(x.Amount).ToMoney()).Filterable(true).Sortable(true);
+    columns.Add(x => x.PaymentMethod).Titled("Payment Method").RenderValueAs(x => x.PaymentMethod.GetDescription()).Filterable(true).Sortable(true);
+    columns.Add(x => x.PaymentDate).Titled("Payment Date").RenderValueAs(x => x.PaymentDate.ToShortDateString()).Filterable(true).Sortable(true);
+}).WithPaging(20)

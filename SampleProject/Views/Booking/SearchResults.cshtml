@@ -1,0 +1,75 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model List<Booking>
+
+@{
+    ViewBag.Title = "Manage Bookings";
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+<div class="dropdown">
+    <button text="Action" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+        Action <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        <li><a href="@Url.Action("New", "Booking")"><i class="fa fa-plus fa-xs"></i> New Booking</a></li>
+        <li>
+            <a onclick="javascript: showSearchBookingsModal()">
+                <i class="fa fa-binoculars fa-xs"></i> Search
+            </a>
+        </li>
+    </ul>
+</div>
+
+<br />
+
+@Html.Grid(Model, new GridRenderOptions() { GridName = "BookingGrid" }).Columns(columns =>
+{
+    columns.Add(x => x.Reference).Titled("Reference").Sortable(true).Filterable(true);
+    columns.Add(x => x.Customer.FormattedName).Titled("Customer").RenderValueAs(x => CustomerColumn(x.Customer)).Encoded(false).Sanitized(false).Filterable(true).Sortable(true);
+    columns.Add(x => x.CareRecipient.FormattedName).Titled("Care Recipient").Sortable(true).Filterable(true);
+    columns.Add(x => x.Carer.FormattedName).Titled("Carer").RenderValueAs(x => CarerColumn(x.Carer)).Encoded(false).Sanitized(false).Sortable(true);
+    columns.Add(x => x.BookingStatus).RenderValueAs(x => "<div class=\"badge\">" + x.BookingStatus.GetDescription() + "</div>").Encoded(false).Sanitized(false).Titled("Status").Sortable(true).Filterable(true).SetFilterWidgetType("BookingStatusFilterWidget");
+    columns.Add(x => x.PaymentMethod).RenderValueAs(x => x.PaymentMethod.GetBadge() + ((x.CareType == CareType.LiveIn) ? ("&nbsp;<i title='Live-in' class='fa fa-home'></i>") : (x.CareType == CareType.OvernightSpecials) ? ("&nbsp;<i title='Overnight/Special' class='fa fa-bed'></i>") : "")).Encoded(false).Sanitized(false).Titled("").Sortable(true);
+    columns.Add(x => x.CreatedDate).RenderValueAs(x => x.CreatedDate.ToString("dd/MM/yyyy HH:mm")).Titled("Date").Sortable(true).Filterable(true);
+    columns.Add(x => x.ID, "Action Column").RenderValueAs(x => CustomMenuColumn(x)).Encoded(false).Sanitized(false).Titled("Action");
+}).WithPaging(20)
+
+<div id="modalPlaceholder" />
+
+@helper CarerColumn(Carer carer)
+{
+if (carer.ID > 0)
+{
+        <a href="@Url.Action("Details", "Carer", new { id = carer.ID })">@carer.FormattedName [@carer.ID]</a>
+}
+}
+
+@helper CustomerColumn(Customer customer)
+{
+    <a href="@Url.Action("Details", "Customer", new { id = customer.ID})">@customer.FormattedName</a>
+}
+
+@helper CustomMenuColumn(Booking booking)
+{
+    <text>
+        <div class="dropdown">
+            <button text="Action" class="btn btn-info dropdown-toggle btn-xs" data-toggle="dropdown">
+                Action <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li>
+                    <a href="@Url.Action("Edit", "Booking", new { id = booking.ID})">View/Edit</a>
+                </li>
+            </ul>
+        </div>
+    </text>
+}
+
+
+@section scripts {
+    @Html.RenderGridEnumFilter("BookingGrid", "BookingStatusFilterWidget", typeof(BookingStatus))
+}

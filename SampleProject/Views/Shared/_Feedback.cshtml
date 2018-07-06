@@ -1,0 +1,20 @@
+﻿
+@if (ViewBag.Success != null && ViewBag.FeedbackMessage != null)
+{
+    if ((bool)ViewBag.Success == true)
+    {
+    <div ID="pnlSuccess" style="padding-top:15px; padding-bottom:15px;">
+        <div class="alert alert-success">
+            @Html.Raw(ViewBag.FeedbackMessage)
+        </div>
+    </div>
+    }
+    else
+    {
+    <div ID="pnlError" style="padding-top:15px; padding-bottom:15px;">
+        <div class="alert alert-danger">
+            @Html.Raw(ViewBag.FeedbackMessage)
+        </div>
+    </div>
+    }
+}

@@ -1,0 +1,51 @@
+﻿@using TrustonTap.Common.Models
+
+@model Dictionary<CustomerStatement, decimal>
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-2">
+            <label>Invoice</label>
+        </div>
+        <div class="col-xs-2">
+            <label>Carer</label>
+        </div>
+        <div class="col-xs-2">
+            <label>Care Recipient</label>
+        </div>
+        <div class="col-xs-2">
+            <label>Invoice Amount</label>
+        </div>
+        <div class="col-xs-2">
+            <label>Amount Outstanding</label>
+        </div>
+        <div class="col-xs-2">
+            <label>Allocation</label>
+        </div>
+    </div>
+
+    @foreach (var allocation in Model)
+    {
+    @Html.EditorFor(x=>allocation, "InvoiceAllocation")
+    }
+    <div class="row">
+        <div class="col-xs-8">
+
+        </div>
+        <div class="col-xs-2">
+            <label>Total</label>
+        </div>
+        <div class="col-xs-2">
+            <div class="input-group">
+                <span class="input-group-addon">£</span>
+                <input id="totalAllocated" type="number" step="0.01" min="0" value="0.00" class="form-control currency" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#totalAllocated").focus(function () {
+            $(this).blur();
+        });
+</script>

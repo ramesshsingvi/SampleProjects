@@ -1,0 +1,80 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using TrustonTap.Web.ViewModels;
+
+@model AvailabilityViewModel
+
+@{
+    ViewBag.Title = "Availability For " + Model.Carer.FormattedName;
+    var headerInfo = ViewBag.HeaderInfo;
+}
+
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+@Html.DisplayFor(x => headerInfo, "HeaderInfo")
+
+<div class="dropdown">
+    <button text="Action" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+        Action <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+            <li>
+                <a onclick="javascript: saveAvailability()">
+                    Save
+                </a>
+            </li>        
+    </ul>
+</div>
+
+@Html.Partial("_Feedback")
+
+@using (Html.BeginForm("Availability", "Carer", FormMethod.Post, new { id = "editForm" }))
+{
+    <br />@Html.EditorFor(x => x.CarerHoliday)    <br /><br />
+
+        <div id="scheduler" class="table-layout">
+            <div class="table-row">
+                <div class="table-cell fixed-width-130">
+                    <label>Day</label>
+                </div>
+                <div class="table-cell fixed-width-90">
+                    <label>7am-9am</label>
+                </div>
+                <div class="table-cell fixed-width-90">
+                    <label>9am-11am</label>
+                </div>
+                <div class="table-cell fixed-width-90">
+                    <label>11am-1pm</label>
+                </div>
+                <div class="table-cell fixed-width-90">
+                    <label>1pm-3pm</label>
+                </div>
+                <div class="table-cell fixed-width-90">
+                    <label>3pm-5pm</label>
+                </div>
+                <div class="table-cell fixed-width-90">
+                    <label>5pm-7pm</label>
+                </div>
+                <div class="table-cell fixed-width-90">
+                    <label>7-10pm</label>
+                </div>
+                <div class="table-cell fixed-width-90">
+                    <label>Overnight</label>
+                </div>
+            </div>
+            @Html.EditorFor(x => x.CarerAvailability)
+        </div>
+        }
+
+        <div id="modalPlaceholder" />
+
+        @section Scripts {
+            <script>
+                function saveTimesheet() {
+                    $('#editForm').submit();
+                }
+
+                $('.nullable-checkbox').checkbox();
+            </script>
+        }

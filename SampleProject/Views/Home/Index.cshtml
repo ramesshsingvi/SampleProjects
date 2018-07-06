@@ -1,0 +1,251 @@
+﻿@using TrustonTap.Common;
+
+@{
+    ViewBag.Title = "Home";
+}
+<div class="row">
+
+    <div class="col-md-3 col-sm-4">
+        <div class="wrimagecard wrimagecard-topimage">
+            <a href="@Url.Action("Index", "Dashboard")">
+                <div class="wrimagecard-topimage_header" style="background-color: #FFE6B5">
+                    <center><i class="fa fa-tachometer-alt" style="color:#FF9331"> </i></center>
+                </div>
+                <div class="wrimagecard-topimage_title">
+                    <h4>
+                        Dashboard
+                        <div class="pull-right badge" id="WrGridSystem"></div>
+                    </h4>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-4">
+        <div class="wrimagecard wrimagecard-topimage">
+            <a href="@Url.Action("Index", "Timesheet")">
+                <div class="wrimagecard-topimage_header" style="background-color: rgba(51, 105, 232, 0.1)">
+                    <center><i class="fa fa-clock" style="color:#3369e8"> </i></center>
+                </div>
+                <div class="wrimagecard-topimage_title">
+                    <h4>
+                        Timesheets
+                        <div class="pull-right badge" id="WrThemesIcons" title="New Timesheets">@ViewBag.TimesheetCount</div>
+                    </h4>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-4">
+        <div class="wrimagecard wrimagecard-topimage">
+            <a href="@ApplicationSettings.PublicWebsiteUrl/admin/test" target="_blank">
+                <div class="wrimagecard-topimage_header" style="background-color: rgba(51, 105, 232, 0.1)">
+                    <center><i class="fa fa-users" style="color:#3369e8"> </i></center>
+                </div>
+                <div class="wrimagecard-topimage_title">
+                    <h4>
+                        Carers / Customers
+                        <div class="pull-right badge" id="WrGridSystem"></div>
+                    </h4>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-4">
+        <div class="wrimagecard wrimagecard-topimage">
+            <a href="@Url.Action("Index", "Booking")">
+                <div class="wrimagecard-topimage_header" style="background-color: rgba(51, 105, 232, 0.1)">
+                    <center><i class="fa fa-phone" style="color:#3369e8"> </i></center>
+                </div>
+                <div class="wrimagecard-topimage_title">
+                    <h4>
+                        Bookings
+                        <div class="pull-right badge" id="WrGridSystem"></div>
+                    </h4>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-4">
+        <div class="wrimagecard wrimagecard-topimage">
+            <a href="@Url.Action("Batches", "CustomerInvoice")">
+                <div class="wrimagecard-topimage_header" style="background-color: rgba(22, 160, 133, 0.1)">
+                    <center><i class="fa fa-calculator" style="color:#16A085"></i></center>
+                </div>
+                <div class="wrimagecard-topimage_title">
+                    <h4>
+                        Customer Invoices
+                        <div class="pull-right badge" id="WrControls"></div>
+                    </h4>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-4">
+        <div class="wrimagecard wrimagecard-topimage">
+            <a href="@Url.Action("GoCardless", "CustomerPayment")">
+                <div class="wrimagecard-topimage_header" style="background-color: rgba(130, 93, 9, 0.1)">
+                    <center><i class="fa fa-credit-card" style="color:#825d09"></i></center>
+                </div>
+                <div class="wrimagecard-topimage_title">
+                    <h4>
+                        Take GoCardless Payments
+                        <div class="pull-right badge" id="WrThemesIcons" title="Outstanding Amount">@ViewBag.GoCardlessTotal</div>
+                    </h4>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-4">
+        <div class="wrimagecard wrimagecard-topimage">
+            <a href="@Url.Action("Index", "CustomerPayment")">
+                <div class="wrimagecard-topimage_header" style="background-color: rgba(130, 93, 9, 0.1)">
+                    <center><i class="fa fa-credit-card" style="color:#825d09"></i></center>
+                </div>
+                <div class="wrimagecard-topimage_title">
+                    <h4>
+                        Customer Payments
+                        <div class="pull-right badge" id="WrThemesIcons" title="Outstanding Amount">@ViewBag.CustomerPaymentTotal</div>
+                    </h4>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-4">
+        <div class="wrimagecard wrimagecard-topimage">
+            <a href="@Url.Action("Batches", "CarerStatement")">
+                <div class="wrimagecard-topimage_header" style="background-color: rgba(121, 90, 71, 0.1)">
+                    <center><i class="fa fa-copy" style="color:#795a47"> </i></center>
+                </div>
+                <div class="wrimagecard-topimage_title">
+                    <h4>
+                        Carer Invoices
+                        <div class="pull-right badge" id="WrNavigation"></div>
+                    </h4>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-4">
+        <div class="wrimagecard wrimagecard-topimage">
+            <a href="@Url.Action("Index", "CarerPayment")">
+                <div class="wrimagecard-topimage_header" style="background-color: rgba(213, 15, 37, 0.1)">
+                    <center><i class="fa fa-money-bill-alt" style="color:#d50f25"> </i></center>
+                </div>
+                <div class="wrimagecard-topimage_title">
+                    <h4>
+                        Carer Payments
+                        <div class="pull-right badge" id="WrForms" title="Outstanding Amount">@ViewBag.CarerPaymentTotal</div>
+                    </h4>
+                </div>
+                </a>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-4">
+        <div class="wrimagecard wrimagecard-topimage">
+            <a href="@Url.Action("Index", "Audit")">
+                <div class="wrimagecard-topimage_header" style="background-color: rgba(250, 188, 9, 0.1)">
+                    <center><i class="fa fa-history" style="color:#fabc09"> </i></center>
+                </div>
+                <div class="wrimagecard-topimage_title">
+                    <h4>
+                        Audit History
+                        <div class="pull-right badge" id="WrForms"></div>
+                    </h4>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-4">
+        <div class="wrimagecard wrimagecard-topimage">
+            <a href="@ApplicationSettings.ReportingServicesUrl" target="_blank">
+                <div class="wrimagecard-topimage_header" style="background-color: rgba(187, 120, 36, 0.1)">
+                    <center><i class="fa fa-chart-line" style="color:#BB7824"></i></center>
+                </div>
+                <div class="wrimagecard-topimage_title">
+                    <h4>
+                        Reports
+                        <div class="pull-right badge"></div>
+                    </h4>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-4">
+        <div class="wrimagecard wrimagecard-topimage">
+            <a href="@Url.Action("Index", "Holiday")">
+                <div class="wrimagecard-topimage_header" style="background-color: rgba(51, 105, 232, 0.1)">
+                    <center><i class="fa fa-suitcase" style="color:#3369e8"> </i></center>
+                </div>
+                <div class="wrimagecard-topimage_title">
+                    <h4>
+                        Holidays
+                        <div class="pull-right badge" id="WrGridSystem"></div>
+                    </h4>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-4">
+        <div class="wrimagecard wrimagecard-topimage">
+            <a href="@Url.Action("Search", "Carer")">
+                <div class="wrimagecard-topimage_header" style="background-color: rgba(178, 0, 255, 0.1)">
+                    <center><i class="fa fa-search" style="color:rgb(178, 0, 255)"> </i></center>
+                </div>
+                <div class="wrimagecard-topimage_title">
+                    <h4>
+                        Carer Search
+                        <div class="pull-right badge" id="WrGridSystem"></div>
+                    </h4>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-4">
+        <div class="wrimagecard wrimagecard-topimage">
+            <a href="@Url.Action("Search", "Customer")">
+                <div class="wrimagecard-topimage_header" style="background-color: rgba(22, 160, 133, 0.1)">
+                    <center><i class="fa fa-search" style="color:#16A085"></i></center>
+                </div>
+                <div class="wrimagecard-topimage_title">
+                    <h4>
+                        Customer Search
+                        <div class="pull-right badge" id="WrControls"></div>
+                    </h4>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-4">
+        <div class="wrimagecard wrimagecard-topimage">
+            <a href="@Url.Action("Index", "Maintenance")">
+                <div class="wrimagecard-topimage_header" style="background-color: rgba(121, 90, 71, 0.1)">
+                    <center><i class="fa fa-cogs" style="color:#795a47"> </i></center>
+                </div>
+                <div class="wrimagecard-topimage_title">
+                    <h4>
+                        Maintenance
+                        <div class="pull-right badge" id="WrNavigation"></div>
+                    </h4>
+                </div>
+            </a>
+        </div>
+    </div>
+
+
+    <div class="col-md-3 col-sm-4">
+    </div>
+</div>

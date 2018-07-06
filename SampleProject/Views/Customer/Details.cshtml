@@ -1,0 +1,83 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model User
+
+@{
+    ViewBag.Title = "Customer " + Model.FormattedName;
+
+    List<CustomerPayment> payments = ViewBag.Payments;
+    List<TimesheetWeek> timesheets = ViewBag.Timesheets;
+    var headerInfo = ViewBag.HeaderInfo;
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+<div class="dropdown">
+    <button text="Action" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+        Action <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        <li>
+            <a href="@Url.Action("Impersonate", "Customer", new { id = Model.ID})" target="_blank"><i class="fa fa-user"></i> Impersonate</a>
+        </li>
+        <li>
+            <a href="@Url.Action("CustomerPaymentHistory", "CustomerPayment", new { id = Model.ID})"><i class="fa fa-history"></i> View Payment History</a>
+        </li>
+        <li>
+            <a href="@Url.Action("Index", "CustomerInvoice", new { id = Model.ID})"><i class="fa fa-calculator"></i> View Invoices</a>
+        </li>
+    </ul>
+</div>
+
+@Html.Partial("_Feedback")
+
+@Html.DisplayFor(x => headerInfo, "HeaderInfo")
+
+@if(timesheets.Any())
+{
+@Html.Grid(timesheets).Columns(columns =>
+{
+    columns.Add(x => x.Reference).Titled("Timesheet Ref").RenderValueAs(x => ReferenceColumn(x)).Encoded(false).Sanitized(false).Sortable(true).Filterable(true);
+    columns.Add(x => x.Carer.FormattedName).Titled("Carer").RenderValueAs(x => CarerColumn(x.Carer)).Encoded(false).Sanitized(false).Filterable(true).Sortable(true);
+    columns.Add(x => x.WeekEnding).RenderValueAs(x => x.WeekEnding.ToShortDateString()).Titled("Week Ending").Sortable(true).Filterable(true);
+    columns.Add(x => x.HoursWorked).RenderValueAs(x => (x.HoursWorked * 60).ConvertMinutesToHHMMString()).Titled("Hours Worked").Sortable(true).Filterable(true);
+    columns.Add(x => x.ID, "InvoiceValue").RenderValueAs(x => x.Summary.InvoiceValue.HasValue ? x.Summary.InvoiceValue.Value.ToMoney() : "").Titled("Invoice Value").Sortable(true).Filterable(true);
+    columns.Add(x => x.ID, "Paid").RenderValueAs(x => x.Summary.CustomerAmountReceived.HasValue ? x.Summary.CustomerAmountReceived.Value.ToMoney() : "").Titled("Paid").Sortable(true).Filterable(true);
+    columns.Add(x => x.Status).RenderValueAs(x => "<div class=\"badge\">" + x.Status.GetDescription() + "</div>").Encoded(false).Sanitized(false).Titled("Status").Sortable(true).Filterable(true);
+    columns.Add(x => x.ID, "Action Column").RenderValueAs(x => CustomMenuColumn(x)).Encoded(false).Sanitized(false).Titled("Action");
+}).WithPaging(20)
+}
+@helper ReferenceColumn(TimesheetWeek timesheet)
+{
+    @Html.ActionLink(timesheet.Reference, "View", "Timesheet", routeValues: new { Id = timesheet.ID }, htmlAttributes: null)
+}
+
+@helper CarerColumn(Carer carer)
+{
+    <a href="@Url.Action("Details", "Carer", new { id = carer.ID})">@carer.FormattedName</a>
+}
+
+@helper CustomMenuColumn(TimesheetWeek timesheetWeek)
+{
+    <text>
+        <div class="dropdown">
+            <button text="Action" class="btn btn-info dropdown-toggle btn-xs" data-toggle="dropdown">
+                Action <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li>
+                    <a href="@Url.Action("Edit", "Timesheet", new { id = timesheetWeek.ID})"><i class="fa fa-eye"></i> View/Edit</a>
+                </li>
+            </ul>
+        </div>
+    </text>
+}
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

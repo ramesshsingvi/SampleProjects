@@ -1,0 +1,54 @@
+﻿@using TrustonTap.Common.Models;
+
+@{
+    string total = ViewBag.TotalOutstanding;
+}
+
+@model int[]
+
+@using (Html.BeginForm("TakePaymentGoCardless", "CustomerPayment", FormMethod.Post))
+{
+    <!-- Modal -->
+    <div id="paymentModal" class="modal fade draggable-modal" role="dialog">
+        <div class="modal-dialog" style="width:700px;">
+            <!-- Modal content-->
+            <div class="modal-content">
+                @using (Html.BeginCollectionItem("ids"))
+                {
+                    foreach (int i in Model)
+                    {
+                        <input id="Ids" name="Ids" value="@i.ToString()" type="hidden">
+                    }
+                }
+                @Html.Hidden("Amount", total)
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Take GoCardless Payment</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Reference</label>
+                        @Html.TextBox("reference", null, new { @class = "form-control", maxlength = "50" })
+                    </div>
+                    <div class="form-group">
+                        <label>Notes</label>
+                        @Html.TextArea("notes", new { @class = "form-control", maxlength = "1000" })
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info pull-left" data-dismiss="modal"><i class="fa fa-times fa-md"></i> Close</button>
+                    <button id="btnSave" type="submit" class="btn btn-info"><i class="fa fa-save fa-md"></i> Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    $("#amount").on('change', function () {
+        allocatePayment($(this).val());
+    });
+    $(".allocationAmount").on('change', function () {
+        updateAllocationTotal();
+    });
+</script>

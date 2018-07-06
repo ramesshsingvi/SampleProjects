@@ -1,0 +1,14 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using TrustonTap.Web.ViewModels;
+
+
+@{
+    var headerInfo = ViewBag.HeaderInfo;
+
+    ViewBag.Title = $"Maintenance";
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+@Html.DisplayFor(x => headerInfo, "HeaderInfo")

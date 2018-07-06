@@ -1,0 +1,24 @@
+﻿@using TrustonTap.Common.Models
+@using TrustonTap.Web.ViewModels;
+
+@model TimesheetDayViewModel
+
+<div class='table-row day @(Model.IsWeekend?"weekend":"weekday")' data-date="@(Model.Date.ToShortDateString())">
+    <div class="table-cell fixed-width-130 text-nowrap">
+        @Html.HiddenFor(x => x.ID)
+        @(Model.Date.DayOfWeek.ToString())&nbsp;<button ToolTip="Copy time" class="copytime"><i class="fa fa-level-down-alt"></i></button>
+    </div>
+    <div class="table-cell fixed-width-180">
+        <div class="carousel slide">
+            <div class="carousel-inner">
+                @Html.EditorFor(m=>m.Periods)
+            </div>
+        </div>
+    </div>
+    <div class="table-cell fixed-width-60 totalCell text-center">
+        <input class="dayTotal form-control" disabled style="display: inline-block; float: none;" id="totalHours" value="0" />
+    </div>
+    <div class="table-cell percent-100">
+        @Html.TextBoxFor(x=>x.Notes, new { @class= "form-control notes" })
+    </div>
+</div>

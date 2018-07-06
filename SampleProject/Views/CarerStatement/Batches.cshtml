@@ -1,0 +1,100 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model List<StatementBatch>
+
+@{
+    ViewBag.Title = "Carer Invoice Batches";
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+<div class="dropdown">
+    <button text="Action" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+        Action <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        @if (((bool)ViewBag.PermitNewStatementRun))
+        {
+            <li><a href="@Url.Action("GenerateStatements", "CarerStatement")"><i class="fa fa-folder-open"></i> Start Statement Run</a></li>
+        }
+        <li>
+            <a onclick="javascript: showSearchCarerStatementModal()">
+                <i class="fa fa-search"></i> Search
+            </a>
+        </li>
+    </ul>
+</div>
+
+@Html.Partial("_Feedback")
+
+@Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(x => x.Reference).Titled("Batch Ref").Sortable(true);
+    columns.Add(x => x.CreatedDate).RenderValueAs(x => x.CreatedDate.ToString("g")).Titled("Batch Date").Sortable(true);
+    columns.Add(x => x.PostedDate).RenderValueAs(x => x.PostedDate.HasValue ? x.PostedDate.Value.ToString("g") : "N/A").Titled("Posted Date").Sortable(true);
+    columns.Add(x => x.Status).RenderValueAs(x => "<div class=\"badge\">" + x.Status.GetDescription() + "</div>").Encoded(false).Sanitized(false).Titled("Status").Sortable(true);
+    columns.Add(x => x.BatchValue).RenderValueAs(x => x.BatchValue.ToMoney()).Encoded(false).Sanitized(false).Titled("Batch Value").Sortable(true);
+    columns.Add(x => x.TotalOutstanding).RenderValueAs(x => x.StatusID < 5 ? "N/A" : x.TotalOutstanding.ToMoney()).Encoded(false).Sanitized(false).Titled("Outstanding<br />To Carers").Sortable(true);
+    columns.Add(x => x.NumberInBatch).RenderValueAs(x => x.NumberInBatch.ToString()).Encoded(false).Sanitized(false).Titled("No. Of Invoices<br />In Batch").Sortable(true);
+    if (Model.Any(x => !String.IsNullOrWhiteSpace(x.AdditionalInfo)))
+    {
+        columns.Add(x => x.AdditionalInfo).RenderValueAs(x => AdditionalInfoColumn(x)).Encoded(false).Sanitized(false).Titled("").Sortable(false);
+    }
+    columns.Add(x => x.ID, "Action Column").RenderValueAs(x => CustomMenuColumn(x)).Encoded(false).Sanitized(false).Titled("Action");
+}).WithPaging(20)
+
+<div id="modalPlaceholder" />
+
+@helper AdditionalInfoColumn(StatementBatch statementBatch)
+{
+if (statementBatch.Error)
+{
+        <a tabindex="0"
+           role="button"
+           data-html="true"
+           data-toggle="popoverfull"
+           data-trigger="focus"
+           title="<b>Error</b>"
+           data-content="@statementBatch.AdditionalInfo"><i style="color:red" class="fa fa-exclamation-triangle"></i></a>
+}
+}
+
+@helper CustomMenuColumn(StatementBatch statementBatch)
+{
+    if (ViewBag.Success == null || !(bool)ViewBag.Success)
+    {
+        <text>
+            <div class="dropdown">
+                <button text="Action" class="btn btn-info dropdown-toggle btn-xs" data-toggle="dropdown">
+                    Action <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    @if (statementBatch.CarerStatements.Any())
+                    {
+                        <li>
+                            <a href="@Url.Action("BatchDetails", "CarerStatement", new { Id = statementBatch.ID })"><i class="fa fa-eye"></i> View</a>
+                        </li>
+                    }
+                    @if (statementBatch.PermitBatchDelete)
+                    {
+                        <li><a href="@Url.Action("DeleteBatch", "CarerStatement", new { id = statementBatch.ID })" id="deletebatch" data-toggle="confirmation" data-title="Are you sure you want to cancel the batch?"><i class="fa fa-times"></i> Cancel Generated Batch</a></li>
+                    }
+                    @if (statementBatch.Status == StatementBatchStatus.StatementsGenerated && statementBatch.CarerStatements.Any())
+                    {
+                        <li><a onclick="javascript:showPostCarerStatementsModal(@statementBatch.ID)"><i class="fa fa-envelope"></i> Post Carer Statements</a></li>
+                    }
+                    @if (statementBatch.CarerStatements.Any())
+                    {
+                        <li><a href="@Url.Action("DownloadPaymentSchedule", "Document", new { id = statementBatch.ID })"><i class="fa fa-external-link-alt"></i> Export Payments</a></li>
+                    }
+                </ul>
+            </div>
+        </text>
+    }
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/ckeditor")
+}

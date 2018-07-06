@@ -1,0 +1,126 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using TrustonTap.Web.ViewModels;
+
+@model TimesheetWeek
+@{
+    decimal mileageAllowance = ViewBag.MileageAllowance;
+    bool isValid = ViewBag.IsValid;
+    string validationMessage = ViewBag.ValidationMessage;
+}
+
+@using (Html.BeginForm("Submit", "Timesheet", FormMethod.Post))
+{
+    <!-- Modal -->
+    <div id="summaryModal" class="modal fade draggable-modal" role="dialog">
+        <div class="modal-dialog" style="width:1250px;">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Summary From @Model.Carer.FormattedName W/E @Model.WeekEnding.ToShortDateString() Care Recipient: @Model.Agreement.CareRecipientDisplayName</h4>
+                </div>
+                <div class="modal-body">
+
+                    @if (!string.IsNullOrWhiteSpace(validationMessage))
+                    {
+                        <div class="alert alert-danger">
+                            <strong>Warning!</strong> @Html.Raw(validationMessage)
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-xs-2"><label>Agreed Hours:</label></div>
+                                        <div class="col-xs-10">@((Model.Agreement.AgreedHours * 60).ConvertMinutesToHHMMString())</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-2"><label>Hourly Rate:</label></div>
+                                        <div class="col-xs-10">@((Model.Agreement.HourlyRate).ToMoney())</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th style="text-align: left">Day</th>
+                                <th style="text-align: left">Hours Worked (Hrs:Min)</th>
+                                <th style="text-align: left">Charge Amount</th>
+                                <th style="text-align: left">Mileage (miles)</th>
+                                <th style="text-align: left">Mileage (@("@")@(mileageAllowance)p/mi)</th>
+                                <th style="text-align: left">Other Expenses</th>
+                            </tr>
+                        </thead>
+
+                        @Html.HiddenFor(x => x.ID)
+                        @foreach (var day in Model.Days)
+                        {
+                            <tr class='day @(day.IsWeekend ? "weekend":"weekday")'>
+                                <td style="text-align: left">@day.Date.ToString("ddd")</td>
+                                <td style="text-align: left"><a tabindex="0"
+   role="button"
+   data-html="true"
+   data-toggle="popover"
+   data-trigger="focus"
+   title="<b>Breakdown For Day</b>"
+   data-content="<div>
+                    @foreach (var period in day.Periods.Where(x=>x.MinutesWorked>0).OrderBy(x=>x.StartTime))
+                    {
+                    <b>@period.StartTime.ToShortTimeString() - @period.EndTime.ToShortTimeString()</b> <text>[@(period.MinutesWorked.ConvertMinutesToHHMMString()) hrs]<br/></text>
+                    }
+
+                    </div>">@day.MinutesWorked.ConvertMinutesToHHMMString()</a></td>
+                                <td style="text-align: left">@day.GetGrossTotal(Model.Agreement.HourlyRate, Model.Agreement.HolidayRate, Model.Agreement.WeekendRate).ToMoney()</td>
+                                <td style="text-align: left">@(Model.Expenses.Where(x => x.Type == ExpenseType.Mileage && x.ExpenseDate == day.Date).Sum(x => (decimal.Parse(x.ExtraInfo))).ToString("0.#"))</td>
+                                <td style="text-align: left">@(Model.Expenses.Where(x => x.Type == ExpenseType.Mileage && x.ExpenseDate == day.Date).Sum(x => x.AmountClaimed).ToMoney())</td>
+                                <td style="text-align: left">@(Model.Expenses.Where(x => x.Type == ExpenseType.Other && x.ExpenseDate == day.Date).Sum(x => x.AmountClaimed).ToMoney())</td>
+                            </tr>
+                        }
+
+                        <tr class='day'>
+                            <td style="text-align: left"><b>Total</b></td>
+                            <td style="text-align: left">
+                                <b>
+                                    @Model.MinutesWorked.ConvertMinutesToHHMMString()
+                                </b>
+                            </td>
+                            <td style="text-align: left">
+                                <b>
+                                    @Model.GetGrossTotal().ToMoney()
+                                </b>
+                            </td>
+                            <td style="text-align: left">
+                                <b>
+                                    @Model.Expenses.Where(x => x.Type == ExpenseType.Mileage).Sum(x => (decimal.Parse(x.ExtraInfo)))
+                                </b>
+                            </td>
+                            <td style="text-align: left">
+                                <b>
+                                    @Model.Expenses.Where(x => x.Type == ExpenseType.Mileage).Sum(x => x.AmountClaimed).ToMoney()
+                                </b>
+                            </td>
+                            <td style="text-align: left">
+                                <b>
+                                    @Model.Expenses.Where(x => x.Type == ExpenseType.Other).Sum(x => x.AmountClaimed).ToMoney()
+                                </b>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info pull-left" data-dismiss="modal"><i class="fa fa-times fa-md"></i> Close</button>
+                    @if (isValid)
+                    {
+                        <button id="btnSave" type="submit" class="btn btn-info"><i class="fa fa-save fa-md"></i> Submit</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}

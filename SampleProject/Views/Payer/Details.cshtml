@@ -1,0 +1,60 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+
+@model User
+
+@{
+    ViewBag.Title = "Payer " + Model.FormattedName;
+
+    List<BankTransaction> payments = ViewBag.Payments;
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+<div class="dropdown">
+    <button text="Action" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+        Action <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        <li>
+            <a href="@Url.Action("Impersonate", "Payer", new { id = Model.ID})" target="_blank">Impersonate</a>
+        </li>
+        <li>
+            <a href="@Url.Action("PayerPaymentHistory", "CustomerPayment", new { id = Model.ID})">View Payment History</a>
+        </li>
+    </ul>
+</div>
+
+@Html.Partial("_Feedback")
+<br/>
+<div class="panel panel-default" style="background-color:#FEF9E7">
+    <div class="panel-body">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-2"><label>Address:</label></div>
+                <div class="col-xs-4">
+                    @Html.Raw(Utilities.FormatAddress(true,
+                        Model.AddressLine1,
+                        Model.AddressLine2,
+                        Model.AddressLine3,
+                        Model.Town,
+                        Model.Postcode))
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-2"><label>Telephone:</label></div>
+                <div class="col-xs-4">
+                    @Model.Phone
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-2"><label>Payments To Date:</label></div>
+                <div class="col-xs-4">@payments.Sum(x => x.Amount).ToMoney()</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

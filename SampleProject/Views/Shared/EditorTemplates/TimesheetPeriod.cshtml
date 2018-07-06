@@ -1,0 +1,30 @@
+﻿@using TrustonTap.Common.Models
+@using TrustonTap.Common
+@using TrustonTap.Web.ViewModels;
+
+@model TimesheetPeriodViewModel
+
+    @{ 
+        var noHours = Model.MinutesWorked > 0 ? Model.MinutesWorked.ConvertMinutesToHHMMString() : string.Empty;
+
+        var starttime = Model.StartTime.Equals(DateTime.MinValue) ||
+            Model.MinutesWorked == 0
+            ? null : Model.StartTime.ToShortTimeString();
+    }
+
+<div class="item">
+    <div class="container">
+        <div class="row" style="padding: 0px">
+            @Html.HiddenFor(x=>x.ID)
+            <div class="col-xs-5" style="padding: 0px">
+                @Html.TextBoxFor(x => x.StartTime, new { @class= "form-control timePicker pull-left", @Value = starttime })
+            </div>
+            <div class="col-xs-7" style="padding-right: 10px">
+                <div class="input-group">
+                    @Html.TextBoxFor(x => x.NumberOfHours, new { @class = "form-control hourPicker pull-left", @Value = noHours })
+                    <span class="input-group-addon">hrs</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,29 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model List<CustomerPayment>
+
+@{
+    var customer = (User)ViewBag.Customer;
+    ViewBag.Title = "Customer Payment Details For " + customer.ToString();
+    var headerInfo = ViewBag.HeaderInfo;
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+@Html.DisplayFor(x => headerInfo, "HeaderInfo")
+
+@Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(x => x.ID).Titled("ID").RenderValueAs(x => x.ID.ToString()).Filterable(true).Sortable(true);
+    columns.Add(x => x.OriginatingReference).Titled("Originating Reference").RenderValueAs(x => x.OriginatingReference).Filterable(true).Sortable(true);
+    columns.Add(x => x.Reference).Titled("Reference").RenderValueAs(x => x.Reference).Filterable(true).Sortable(true);
+    columns.Add(x => x.Type).Titled("Type").RenderValueAs(x => x.Type.GetDescription()).Filterable(true).Sortable(true);
+    columns.Add(x => x.Amount).Titled("Amount").RenderValueAs(x => x.Amount.ToMoney()).Filterable(true).Sortable(true);
+    columns.Add(x => x.VAT).Titled("VAT").RenderValueAs(x => x.VAT.ToMoney()).Filterable(true).Sortable(true);
+    columns.Add(x => x.Total).Titled("Total").RenderValueAs(x => x.Total.ToMoney()).Filterable(true).Sortable(true);
+    columns.Add(x => x.AmountOutstanding).Titled("Outstanding").RenderValueAs(x => x.AmountOutstanding.ToMoney()).Filterable(true).Sortable(true);
+    columns.Add(x => x.Notes).Titled("Description").RenderValueAs(x => x.Notes.Truncate(255)).Filterable(true).Sortable(true);
+    columns.Add(x => x.CreatedDate).Titled("Date").RenderValueAs(x => x.CreatedDate.ToShortDateString()).Filterable(true).Sortable(true);
+}).WithPaging(20)

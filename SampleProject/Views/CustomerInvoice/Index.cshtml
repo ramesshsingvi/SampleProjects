@@ -1,0 +1,118 @@
+﻿@using TrustonTap.Web;
+@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model List<CustomerStatement>
+
+@{
+    Payer payer = ViewBag.Payer;
+    if (payer != null)
+    {
+        ViewBag.Title = "Invoices For " + payer.FormattedName;
+    }
+    else
+    {
+        ViewBag.Title = "Customer Invoices";
+    }
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+<div class="dropdown">
+    <button text="Action" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+        Action <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        @if (Model.Any())
+        {
+            <li>
+                <a onclick="javascript:showTakePaymentModal(@payer.ID)">
+                    <i class="fa fa-money-bill-alt"></i> Take Payment
+                </a>
+            </li>
+        }
+    </ul>
+</div>
+
+
+
+@Html.Partial("_Feedback")
+
+@Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(x => x.Reference).Titled("TOT Invoice Number").RenderValueAs(x => ReferenceColumn(x)).Encoded(false).Sanitized(false).Sortable(true);
+    if (payer == null)
+    {
+        columns.Add(x => x.Booking.Payer.FormattedName).Titled("Customer/Payer").Sortable(true);
+    }
+    columns.Add(x => x.Booking.Carer.FormattedName).Titled("Carer").RenderValueAs(x => CarerColumn(x.Booking.Carer)).Encoded(false).Sanitized(false).Filterable(true).Sortable(true);
+    columns.Add(x => x.StatementDate).RenderValueAs(x => x.CreatedDate.ToShortDateString()).Titled("Invoice Date").Sortable(true);
+    columns.Add(x => x.Total).Titled("Invoice Amount").RenderValueAs(x => x.Total.ToMoney()).Sortable(true);
+    columns.Add(x => x.AmountPaid).Titled("Amount Paid").RenderValueAs(x => x.AmountPaid.ToMoney()).Sortable(true);
+    columns.Add(x => x.AmountOutstanding).Titled("Amount Outstanding").RenderValueAs(x => OutstandingColumn(x)).Encoded(false).Sanitized(false).Sortable(true);
+    columns.Add(x => x.Status).RenderValueAs(x => "<div class=\"badge\">" + x.Status.GetDescription() + "</div>").Encoded(false).Sanitized(false).Titled("Status").Sortable(true);
+    columns.Add(x => x.Timesheet.HoldFromCarerStatement).RenderValueAs(x => x.Timesheet.HoldFromCarerStatement ? ("<i title='Held From Carer Statement' style='color:red' class='fa fa-exclamation-triangle'></i>") : "").Encoded(false).Sanitized(false).Titled("").Sortable(true);
+    columns.Add(x => x.ID, "Action Column").RenderValueAs(x => CustomMenuColumn(x)).Encoded(false).Sanitized(false).Titled("Action");
+}).WithPaging(20)
+
+<div id="modalPlaceholder" />
+
+@helper ReferenceColumn(CustomerStatement customerStatement)
+{
+    @Html.ActionLink(customerStatement.Reference, "ViewByReference", "Timesheet", routeValues: new { Reference = customerStatement.Reference }, htmlAttributes: null)
+}
+
+@helper CarerColumn(Carer carer)
+{
+    <a href="@Url.Action("Details", "Carer", new { id = carer.ID })">@carer.FormattedName</a>
+}
+
+@helper OutstandingColumn(CustomerStatement customerStatement)
+{
+if (customerStatement.Overdue)
+{
+        <div style="color: red">@customerStatement.AmountOutstanding.ToMoney()</div>
+}
+else
+{
+        @customerStatement.AmountOutstanding.ToMoney()
+}
+}
+
+@helper CustomMenuColumn(CustomerStatement customerStatement)
+{
+    <text>
+        <div class="dropdown">
+            <button text="Action" class="btn btn-info dropdown-toggle btn-xs" data-toggle="dropdown">
+                Action <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li>
+                    <a href="@Url.Action("InvoiceDetails", "CustomerInvoice", new { Id = customerStatement.ID})"><i class="fa fa-eye"></i> View</a>
+                </li>
+                @if (customerStatement.Overdue)
+                {
+                    <li>
+                        <a href="@Url.Action("SendOverdue", "CustomerInvoice", new { Id = customerStatement.ID })">Send Overdue Invoice</a>
+                    </li>
+                }
+                @if (!customerStatement.Timesheet.CarerPaymentGenerated)
+                {
+                    if (!customerStatement.Timesheet.HoldFromCarerStatement)
+                    {
+                        <li>
+                            <a href="@Url.Action("HoldFromCarerStatement", "Timesheet", new { id = customerStatement.Timesheet.ID })" id="holdback" data-toggle="confirmation" data-title="Are you sure you want to hold back the timesheet?"><i class="fa  fa-exclamation-triangle"></i> Hold From Carer Statement</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li>
+                            <a href="@Url.Action("HoldFromCarerStatement", "Timesheet", new { id = customerStatement.Timesheet.ID, hold = false })"><i class="fa fa-exclamation-triangle"></i> End Hold From Carer Statement</a>
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+    </text>
+}

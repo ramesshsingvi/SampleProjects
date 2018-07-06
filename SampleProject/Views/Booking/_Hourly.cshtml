@@ -1,0 +1,87 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using TrustonTap.Web.ViewModels;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model BookingViewModel
+
+
+<div class="form-group">
+    <div class="row">
+        <div class="col-xs-5"></div>
+        <div class="col-xs-2"><label>Hourly Rate*</label></div>
+        <div class="col-xs-2"><label>Total</label></div>
+    </div>
+    <div class="row">
+        <div class="col-xs-3"><label>Maximum Number Of Hours:<br />(Per Week)</label></div>
+        <div class="col-xs-2">
+            <div class="input-group">
+                @Html.TextBoxFor(x => x.Booking.MaxWeeklyHours, new { @class = "form-control", placeholder = "0", type = "number", min = "0", max = "80", step = "1" })
+                <span class="input-group-addon">hrs</span>&nbsp;@@
+            </div>
+        </div>
+        <div class="col-xs-2">
+            <div class="input-group">
+                <span class="input-group-addon">£</span>
+                @{var formatted = Model.Booking.HourlyRate == 0 ? "" : String.Format("{0:0.00}", Model.Booking.HourlyRate); }
+                @Html.TextBoxFor(x => x.Booking.HourlyRate, new { @class = "form-control currency", placeholder = "0.00", type = "number", min = "0", step = "0.01", required = "required", @Value = formatted })
+            </div>
+        </div>
+        <div class="col-xs-2"><span id="ratetotal">£0.00</span></div>
+    </div>
+    <div class="row">
+        <div class="col-xs-5"></div>
+        <div class="col-xs-2"><label>Hourly Rate Weekends</label></div>
+        <div class="col-xs-2"></div>
+    </div>
+    <div class="row">
+        <div class="col-xs-5"></div>
+        <div class="col-xs-2">
+            <div class="input-group">
+                <span class="input-group-addon">£</span>
+                @{var formattedWeekends = Model.Booking.HourlyRateWeekends == 0 ? "" : String.Format("{0:0.00}", Model.Booking.HourlyRateWeekends); }
+                @Html.TextBoxFor(x => x.Booking.HourlyRateWeekends, new { @class = "form-control currency", placeholder = "0.00", type = "number", min = "0", step = "0.01", @Value = formattedWeekends })
+            </div>
+        </div>
+        <div class="col-xs-2"></div>
+    </div>
+    <div class="row">
+        <div class="col-xs-5"></div>
+        <div class="col-xs-2"><label>Hourly Rate Holidays</label></div>
+        <div class="col-xs-2"></div>
+    </div>
+    <div class="row">
+        <div class="col-xs-5"></div>
+        <div class="col-xs-2">
+            <div class="input-group">
+                <span class="input-group-addon">£</span>
+                @{var formattedHolidays = Model.Booking.HourlyRateHolidays == 0 ? "" : String.Format("{0:0.00}", Model.Booking.HourlyRateHolidays); }
+                @Html.TextBoxFor(x => x.Booking.HourlyRateHolidays, new { @class = "form-control currency", placeholder = "0.00", type = "number", min = "0", step = "0.01", @Value = formattedHolidays })
+            </div>
+        </div>
+        <div class="col-xs-2"></div>
+    </div>
+</div>
+<script>
+    $("#@Html.IdFor(x => x.Booking.MaxWeeklyHours),#@Html.IdFor(x => x.Booking.HourlyRate)").change(function (e) {
+        var rate = parseFloat($("#@Html.IdFor(x => x.Booking.HourlyRate)").val());
+
+        var rateWeekendsField = $("#@Html.IdFor(x => x.Booking.HourlyRateWeekends)");
+        if (!rateWeekendsField.val())
+            rateWeekendsField.val(rate);
+
+        var rateHolidaysField = $("#@Html.IdFor(x => x.Booking.HourlyRateHolidays)");
+        if (!rateHolidaysField.val())
+            rateHolidaysField.val(rate);
+
+        var hours = parseFloat($("#@Html.IdFor(x => x.Booking.MaxWeeklyHours)").val());
+        var total = hours * rate;
+        if (isNaN(total)) total = 0;
+
+        $("#ratetotal").html("£" + total.toFixed(2));
+        updateBookingTotal();
+    });
+
+    $("#@Html.IdFor(x => x.Booking.HourlyRate)").change();
+</script>

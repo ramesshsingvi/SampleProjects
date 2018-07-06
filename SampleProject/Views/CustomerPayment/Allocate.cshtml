@@ -1,0 +1,90 @@
+﻿@using TrustonTap.Common;
+@using TrustonTap.Common.Models;
+@using GridMvc.Html;
+
+@model List<BankTransaction>
+
+@{
+    ViewBag.Title = "Allocate Payments";
+    var headerInfo = ViewBag.HeaderInfo;
+}
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+@Html.Partial("_Feedback")
+
+@Html.DisplayFor(x => headerInfo, "HeaderInfo")
+
+@Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(x => x.ID).Titled("ID").RenderValueAs(x => x.ID.ToString()).Filterable(true).Sortable(true);
+    columns.Add(x => x.Payer.FormattedName).Titled("Payer").RenderValueAs(x => PayerColumn(x.Payer)).Encoded(false).Sanitized(false).Filterable(true).Sortable(true);
+    columns.Add(x => x.Reference).Titled("Reference").RenderValueAs(x => x.Reference).Filterable(true).Sortable(true);
+    columns.Add(x => x.PaymentMethod).Titled("Payment Method").RenderValueAs(x => x.PaymentMethod.GetDescription()).Filterable(true).Sortable(true);
+    columns.Add(x => x.Amount).Titled("Total Payment").RenderValueAs(x => x.Amount.ToMoney()).Filterable(true).Sortable(true);
+    columns.Add(x => x.AmountUnallocated).Titled("Unallocated").RenderValueAs(x => x.AmountUnallocated.ToMoney()).Filterable(true).Sortable(true);
+    columns.Add(x => x.AllocationStatus).Titled("Status").RenderValueAs(x => "<div class=\"badge\">" + x.AllocationStatus.GetDescription() + "</div>").Encoded(false).Sanitized(false).Filterable(true).Sortable(true);
+    columns.Add(x => x.PaymentDate).Titled("Payment Date").RenderValueAs(x => x.PaymentDate.ToShortDateString()).Filterable(true).Sortable(true);
+    columns.Add(x => x.ID, "Action Column").RenderValueAs(x => CustomMenuColumn(x)).Encoded(false).Sanitized(false).Titled("Action");
+}).WithPaging(20)
+
+<div id="modalPlaceholder" />
+
+@helper PayerColumn(User user)
+{
+    <a href="@Url.Action("Details", "Payer", new { id = user.ID })">@user.ToString() [@user.ID]</a>
+}
+
+@helper CustomMenuColumn(BankTransaction transaction)
+{
+    <text>
+        <div class="dropdown">
+            <button text="Action" class="btn btn-info dropdown-toggle btn-xs" data-toggle="dropdown">
+                Action <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li>
+                    <a href="@Url.Action("PaymentAllocationDetails", "CustomerPayment", new { id = transaction.ID})"><i class="fa fa-binoculars"></i> View</a>
+                </li>
+                @if (true) // TODO: Show  only if customer has outstanding statements.
+                {
+                    <li>
+                        <a onclick="javascript:showAllocationModal(@transaction.ID)"><i class="fa fa-handshake"></i> Allocate</a>
+                    </li>
+                }
+                <li>
+                    <a onclick="javascript:showTransferModal(@transaction.ID)"><i class="fa fa-arrows-alt-h"></i> Transfer Unallocated</a>
+                </li>
+                <li>
+                    <a onclick="javascript:showRefundModal(@transaction.ID)"><i class="fa fa-external-link-square-alt"></i> Refund</a>
+                </li>
+            </ul>
+        </div>
+    </text>
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/ckeditor")
+    <script type="text/javascript">
+        $(function () {
+            var unallocated = 0.00;
+            var total = 0.00;
+
+            $("tr.grid-row").each(function () {
+                var tr = $(this);
+                var rows = $(tr).children();
+
+                unallocated += parseFloat(rows[5].innerHTML.replace("£", "").replace(",", ""));
+                total += parseFloat(rows[4].innerHTML.replace("£", "").replace(",", ""));
+            });
+
+            unallocated = unallocated.toFixed(2);
+            total = total.toFixed(2);
+            var trTotals = "<tr style='color:red;font-weight:bold;'><td></td><td></td><td></td><td></td><td>£" + total + "</td><td>£" + unallocated + "</td><td></td><td></td><td></td></tr>"
+            $("tr.grid-row:last").after(trTotals);
+        });
+
+    </script>
+}
